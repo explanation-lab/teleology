@@ -1,31 +1,34 @@
-# Project status
+# Teleology — current status
 
-Update this file as work changes so another member can resume it. The README describes the science; this file describes the current operational state.
+Last updated: 2026-09-11.
 
-- Last updated: set when the project begins.
-- Current stage: not yet specified.
-- Active study/experiment: none specified.
-- Project Lead: unassigned; awaiting confirmed assignment.
-- Project Backup: unassigned; awaiting confirmed assignment.
+- Current stage: New project; research brief pending.
+- Active study/experiment: none.
+- Project Lead: unassigned; awaiting the final accepted roster and assignment.
+- Project Backup: unassigned; awaiting the final accepted roster and assignment.
+
+## What exists
+
+The private repository was generated using the canonical Explanation Lab template. It contains scientific/continuity documentation and starting directories. The project Slack channel and Dashboard workspace exist. No student has been invited or assigned by this setup.
 
 ## Current, old and future work
 
-- Current: describe actual active work and its paths.
-- Old/archive: identify superseded work and why it is retained. Do not delete useful history or break live paths.
-- Future: label planned work clearly; do not present it as implemented.
+- Current: define the research question, useful background and a practical initial plan.
+- Old/archive: no prior project material has been supplied here.
+- Future: experiments, data collection, analysis and scientific outputs have not begun.
 
-## Current tasks and blockers
+## Next actions and blockers
 
-No tasks or owners have been assigned by the template. Record agreed next actions, owners and deadlines, plus decisions or missing inputs that block progress.
+Confirm the accepted team and Lead/Backup, agree the research brief, identify the first concrete task and deadline, then document any actual materials or resources. These are planning steps, not assigned student tasks. The accepted roster and scientific brief are pending.
 
 ## Next milestone
 
-Not yet agreed. Define an observable outcome and date when known.
+An agreed research question and first work plan; date and owner not yet assigned.
 
 ## Latest Friday checkpoint
 
-Not recorded. Confirm that appropriate version-controlled work is committed and pushed, including unfinished work on an appropriate branch. No important version-controlled work should exist only on a laptop. Keep the README accurate, update this status file, and make current versus old/future work understandable. Any valid scientific repository structure is acceptable; exact template folder names are not a checkpoint requirement.
+No project checkpoint has been recorded. Future checkpoints should confirm appropriate work is committed and pushed, including unfinished work on a branch; no important version-controlled work remains only on a laptop; README and PROJECT_STATUS are current; current versus old/future work is understandable. Exact template folder names are not required.
 
 ## Resume / handoff
 
-Record the working branch/commit, entry points, verified commands, current outputs, unresolved decisions and the next action. Link only to resources that actually exist and are appropriate to share.
+Start with this file and README. There is no experiment launch command, dataset or analysis pipeline to run yet. Record actual entry points and verified commands when implementation begins. Keep planned directions distinct from completed work.

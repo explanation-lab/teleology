@@ -1,10 +1,12 @@
-# Research project title
+# Teleology
 
-Replace this title and describe the research question, motivation and scientific contribution. This is a flexible starting point for new Explanation Lab projects; change the structure when the science requires it. Existing projects do not need to adopt these folder names.
+The specific teleology research question and motivation have not yet been provided. The first scientific step is to define them with the project team.
+
+Created from the private Explanation Lab research-project-template. The starting folder structure can change as the project develops.
 
 ## Studies and experiments
 
-No experiments, data or results are supplied by this template. Describe each actual study, its design and the corresponding source/materials once they exist. Separate current studies from planned work and older versions. Use experiment-by-experiment subdirectories where useful.
+No experiments, data, analyses or results have been supplied for this project. The repository currently contains the starting structure and documentation only. Proposed work will be labeled as planned until it actually exists.
 
 ## Repository structure
 
@@ -27,7 +29,10 @@ Add commands, software/package versions, inputs and expected outputs for the imp
 
 ## Scientific resources
 
-Add verified preregistration, OSF, rendered experiment and rendered R-analysis links when available. There are no configured scientific resources in this template. A draft is not a preregistration; planned work is not a completed result.
+- [Project Slack channel](https://explanationlab.slack.com/archives/C0C19J4RA81)
+- [Research repository](https://github.com/explanation-lab/teleology)
+
+No OSF, Drive, preregistration, Study Console, rendered experiment or rendered R-analysis resource has been configured. Add verified links when they exist.
 
 ## Contributors
 
