@@ -1,45 +1,74 @@
-# Teleology
+# Teleology & Placeholders
 
-The specific teleology research question and motivation have not yet been provided. The first scientific step is to define them with the project team.
+Do children represent that an animal has **something it is for** even when they do not know exactly what that purpose is, and if so, how do they constrain or elaborate that placeholder?
 
-Created from the private Explanation Lab research-project-template. The starting folder structure can change as the project develops.
+## Scientific motivation and hypothesis
 
-## Studies and experiments
+Believing that a purpose exists need not be the same as knowing its content. The purpose-placeholder hypothesis distinguishes **purpose existence** (“this animal has something it is for”) from **purpose knowledge** (“I know what it is for”). The project asks whether children can hold the first representation without the second, and which descriptions they accept as possible elaborations of it. Keeping those questions separate helps us avoid treating an answer about what an animal does as evidence that the child attributes a purpose to it.
 
-No experiments, data, analyses or results have been supplied for this project. The repository currently contains the starting structure and documentation only. Proposed work will be labeled as planned until it actually exists.
+The research pipeline is **candidate item generation → adult norming → child placeholder-elaboration study**. The current phase is **candidate-item development / preparation for adult norming**. No Teleology experiment has been launched.
 
-## Repository structure
+## Start here
+
+Read this README for the science, then [PROJECT_STATUS.md](PROJECT_STATUS.md) for current ownership, milestones, unresolved choices and handoff. The team is **Kate Shon (Project Lead), Dhruv Sahu (Member), and Ethan Fisher-Dayn (Member)**. No Backup has been selected. Kate coordinates the project and helps turn the conceptual question into a testable plan. Ethan’s confirmed immediate work is candidate-pool revision/development; an individual assignment for Dhruv remains to be agreed.
+
+Use the existing Dashboard project home and guided project introduction alongside the lab’s general GitHub/GitHub Desktop and Slack onboarding. Opening a resource does not grant private access. Supply your actual GitHub username through onboarding, request the intended repository access, and then clone this repository through GitHub Desktop. Keep general onboarding and CITI review separate from project work and study authorization.
+
+## Current materials development
+
+Develop **25 unique, short, child-friendly candidate descriptions per working category**, paired with appropriate animals: about 100 descriptions overall, with additional alternatives welcome during development.
+
+| Working category | Intended distinction to evaluate |
+|---|---|
+| Behavior | Something the animal simply does. |
+| Animal-benefiting | Something that benefits the animal itself. |
+| Ecological | Something involving effects or benefits to another organism or the broader environment. |
+| Human-benefiting | Something useful or beneficial to people. |
+
+These are **working distinctions to test**, not validated psychological categories. The target is not 25 animals with all four descriptions for each animal. An animal need not appear in every category. Do not force unnatural examples to fill a table, and make descriptions brief and understandable to children from the outset. Naturally ambiguous candidates may remain for adult norming rather than being assigned a uniquely “correct” category by the research team in advance.
+
+The existing [Paper Readings](https://docs.google.com/document/d/13lWP7D-J-v3HgdYzgC6muQlbEM8qEqdO5mBLml37n2o/edit?usp=drivesdk) document contains literature notes, exploratory designs, taxonomy discussion and an animal-description table. It is background/item-development material, not a final protocol, normed stimulus set, dataset or result of this project. Historical directions and stronger taxonomy claims there do not supersede the current working distinctions above. Do not duplicate that document or import its older proposed design details as settled decisions.
+
+## Planned adult norming
+
+Adult norming precedes selection of final material for the child study. The current proposal is for adults to see an animal-description pair and classify it into one of the four working categories, with a **none/unclear** option. Its purpose is to establish how descriptions are perceived empirically, rather than assuming the team’s labels are uniquely correct.
+
+An additional judgment about how natural a description sounds as something the animal could be “for” has been discussed; it is an **open proposed measure**, not a confirmed feature. Sample size, recruitment, exclusions, retention thresholds, consensus criteria, wording, trial structure, analysis and preregistration have not been established. No adult-norming experiment is implemented or launched in this repository.
+
+## Planned later child study
+
+The later study would use adult-normed descriptions to examine how children elaborate a purpose placeholder. It should distinguish whether children think an animal has something it is for from whether they know what that purpose is, then investigate the content they accept as possible fillings of the placeholder.
+
+This is a planned research direction. Ages, sample size, conditions, trial count, stopping rules, exclusions, analyses and preregistration are not yet specified. Older exploratory screen sequences and character suggestions in background material are not a finalized child protocol.
+
+## Project resources
+
+- [Research Dashboard](https://explanation-lab-dashboard.web.app/#project/TELEOLOGY/overview) — concise current state, people, tasks, shared updates, confirmed decisions and open questions.
+- [Private Teleology repository](https://github.com/explanation-lab/teleology) — version-controlled scientific materials and reproducibility documentation.
+- [#proj-teleology](https://explanationlab.slack.com/archives/C0C19J4RA81) — team conversation; important durable state also belongs in the Dashboard or repository.
+- [Paper Readings](https://docs.google.com/document/d/13lWP7D-J-v3HgdYzgC6muQlbEM8qEqdO5mBLml37n2o/edit?usp=drivesdk) — existing background-reading and exploratory item-development document.
+
+The resource links were verified during preparation. Their existing sharing is unchanged. There is no configured Teleology OSF project, preregistration, dataset, analysis, experiment link or Study Console resource. Dashboard membership does not grant Study Console access; verified CITI and a separate explicit Admin grant are required before any future student access.
+
+## Repository organization and reproducibility status
 
 ```text
-README.md              Durable scientific description and reproducibility entry points
-PROJECT_STATUS.md      Current operational state and continuity
+README.md              Durable scientific orientation and reproducibility status
+PROJECT_STATUS.md      Current operational state, ownership and handoff
 code/
-  R/                   R analysis and figure generation
-  experiments/         Experiment implementations and materials
-data/                 De-identified analysis data
-docs/                 Browser-renderable experiments or generated web output
-figures/              Plots, diagrams, experimental screenshots and paper figures
+  R/                   R analyses and figure code, when they exist
+  experiments/         Experiment implementations/materials, when they exist
+data/                  Appropriately de-identified analysis data, when they exist
+docs/                  Browser-renderable experiments or generated web output
+figures/               Plots, diagrams, screenshots and paper figures
 ```
 
-`data/`, `docs/` and `figures/` are repository-root folders. Add Python or manuscript folders only when the project actually uses them. Keep `docs/` for browser-renderable output, not general notes. Explain any project-specific organization here.
+The repository currently contains these orientation files and directory guidance only. There are no experiment implementations, run commands, participant datasets, analyses, results or reproducible pipelines to execute. The prior exploratory material remains in the linked background document. Add actual inputs, dependencies, verified commands and expected outputs when implementation exists; keep current, superseded and planned work distinguishable.
 
-## Running experiments and reproducing analyses
+`docs/` is not a general literature/meeting-notes directory. Add a different directory deliberately if the work later needs one, rather than forcing scientific prose into a generated-output folder.
 
-Add commands, software/package versions, inputs and expected outputs for the implementations that actually exist. Distinguish processing raw data from reproducing analyses on an already processed dataset. Record known reproduction limits rather than inventing missing steps.
+## Data, access and privacy
 
-## Scientific resources
+This repository is private. Commit only appropriately de-identified analysis data when such data exist and are approved for this location. Never commit participant-identifiable data, identifiable raw CHS exports, login/session information, payment information, gift-card codes, credentials, API tokens, private keys or other restricted operational information. Keep restricted source data in approved systems outside GitHub. Review the actual staged files and history; `.gitignore` is not a privacy audit.
 
-- [Project Slack channel](https://explanationlab.slack.com/archives/C0C19J4RA81)
-- [Research repository](https://github.com/explanation-lab/teleology)
-
-No OSF, Drive, preregistration, Study Console, rendered experiment or rendered R-analysis resource has been configured. Add verified links when they exist.
-
-## Contributors
-
-Record confirmed contributions and authorship as appropriate. Add a CRediT statement when useful for a mature or publication repository; no roles or authorship are assigned by this template.
-
-## Data and access
-
-Commit only appropriately de-identified analysis data. Never commit participant-identifiable data, identifiable raw CHS exports, login/session information, payment or gift-card codes, credentials, tokens or private keys. Keep approved restricted source data outside GitHub. Review files and history before copying a repository or making it public.
-
-Use [PROJECT_STATUS.md](PROJECT_STATUS.md) for active tasks, ownership, blockers and handoffs. Keep this README focused on durable scientific documentation.
+Use focused branches, meaningful commits and review before merging. Keep operational ownership, blockers, next actions, version/checkpoint details and resume instructions in [PROJECT_STATUS.md](PROJECT_STATUS.md).
