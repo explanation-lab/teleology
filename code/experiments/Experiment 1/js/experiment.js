@@ -1,12 +1,9 @@
 // Teleology & Placeholders — adult norming, local review version.
 // Open index.html directly. Responses stay in this browser until CSV download.
-const STUDY_VERSION = "adult-norming-review-2026-10-15";
-const TRIALS_PER_BLOCK = 20;
+const STUDY_VERSION = "adult-norming-review-2026-10-15-v2";
 const N = STIMULI.length;
 
-// The horizontal option is for layout review; index.html uses stacked buttons.
-const requestedLayout = new URLSearchParams(window.location.search).get("layout");
-const BUTTON_LAYOUT = requestedLayout === "horizontal" ? "horizontal" : "stacked";
+const BUTTON_LAYOUT = "horizontal";
 let consentDeclined = false;
 
 function updateProgress(completed) {
@@ -70,17 +67,18 @@ timeline.push({
     <h1>Welcome!</h1>
     <p>In this study, you will see short descriptions of things animals do or have.</p>
     <p>For each description, choose the category that you think fits best.</p>
-    <p>The four categories are:</p>
-    <dl class="category-definitions">
-      <div><dt>Ecological</dt><dd>Something involving effects or benefits to another organism or the broader environment.</dd></div>
-      <div><dt>Animal-benefiting</dt><dd>Something that benefits the animal itself.</dd></div>
-      <div><dt>Human-benefiting</dt><dd>Something useful or beneficial to people.</dd></div>
-      <div><dt>Behavioral</dt><dd>Something the animal simply does, which may not have a clear animal-benefiting, ecological, or human-benefiting function.</dd></div>
-    </dl>
-    <p>Some descriptions may fit more than one category. Please choose the one you think fits best.</p>
-    <p>The buttons will stay in the same order throughout the study.</p>
-    <p>You can take a break after every 20 descriptions.</p>
-    <p>Click 'Begin' when you are ready.</p>
+    <div class="category-table-wrap">
+      <table class="category-definitions" aria-label="The four categories">
+        <thead><tr><th scope="col">Category</th><th scope="col">Description</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Ecological</th><td>Something involving effects or benefits to another organism or the broader environment.</td></tr>
+          <tr><th scope="row">Animal-benefiting</th><td>Something that benefits the animal itself.</td></tr>
+          <tr><th scope="row">Human-benefiting</th><td>Something useful or beneficial to people.</td></tr>
+          <tr><th scope="row">Behavioral</th><td>Something the animal simply does, which may not have a clear animal-benefiting, ecological, or human-benefiting function.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="instruction-note">Some descriptions may fit more than one category.<br>Please choose the one you think fits best.</p>
   </div>`,
   choices: ["Begin"],
   css_classes: ["single-btn", "instructions-screen"],
@@ -89,7 +87,6 @@ timeline.push({
 
 order.forEach((stim, i) => {
   const trialNumber = i + 1;
-  const blockNumber = Math.floor(i / TRIALS_PER_BLOCK) + 1;
 
   timeline.push({
     type: jsPsychHtmlButtonResponse,
@@ -98,7 +95,7 @@ order.forEach((stim, i) => {
     choices: buttonOrder,
     css_classes: ["category-screen", `layout-${BUTTON_LAYOUT}`],
     button_layout: "grid",
-    grid_columns: BUTTON_LAYOUT === "horizontal" ? 4 : 1,
+    grid_columns: 4,
     grid_rows: null,
     post_trial_gap: 300,
     data: {
@@ -107,7 +104,6 @@ order.forEach((stim, i) => {
       property_text: stim.text,
       researcher_category: stim.category,
       trial_number: trialNumber,
-      block_number: blockNumber,
       button_order: buttonOrder.join(" | ")
     },
     on_start: function () { updateProgress(i); },
@@ -122,18 +118,6 @@ order.forEach((stim, i) => {
     }
   });
 
-  if (trialNumber % TRIALS_PER_BLOCK === 0 && trialNumber < N) {
-    timeline.push({
-      type: jsPsychHtmlButtonResponse,
-      stimulus: `<div class="center"><h1>You are doing great!</h1>
-        <p>You have completed ${trialNumber} out of ${N} descriptions.</p>
-        <p>Feel free to take a short break.</p>
-        <p>Click 'Continue' whenever you are ready.</p></div>`,
-      choices: ["Continue"],
-      css_classes: ["single-btn"],
-      data: { task: "break", completed: trialNumber }
-    });
-  }
 });
 
 const COLUMNS_TO_DROP = ["response", "stimulus", "trial_type", "trial_index", "plugin_version",

@@ -22,11 +22,11 @@ The remaining staffing and background notes below record the September planning 
 
 ## Next milestone
 
-David reviews the updated 80-item prototype, chooses the button layout, and reviews Kate's start guide and walkthrough task. Kate then completes a full local test and checks the CSV after the approved update is shared. Online saving, final recruitment settings and item-selection criteria remain later work. No research deadline is assigned by this review.
+David has selected horizontal buttons and requested a polished category table and removal of scheduled breaks. He reviews the revised prototype, Kate's start guide and walkthrough task before anything is shared. Kate then completes a full local test and checks the CSV after the approved update is shared. Online saving, final recruitment settings and item-selection criteria remain later work. No research deadline is assigned by this review.
 
 ## Current, prior and future work
 
-- **Current:** 80 phrases, four category buttons, phrase order shuffled per session, one button order per session, and breaks after 20/40/60 responses. This version saves a local CSV and is not connected to recruitment or lab-side storage.
+- **Current:** 80 consecutive phrases without scheduled breaks, four horizontal category buttons, phrase order shuffled per session, and one button order per session. The instruction screen uses a category table with larger row labels and Behavioral last. This version saves a local CSV and is not connected to recruitment or lab-side storage.
 - **Prior/exploratory:** the existing [Paper Readings](https://docs.google.com/document/d/13lWP7D-J-v3HgdYzgC6muQlbEM8qEqdO5mBLml37n2o/edit?usp=drivesdk) includes Ethan’s reading/design work, taxonomy discussion and an animal-by-category table. Treat these as preparatory material. Earlier Creative/Assigned-Social taxonomy arguments and older child-procedure sketches are not the current approved design. The original template-only Git history is retained; no background file was deleted or duplicated.
 - **Future:** adult data collection → selection of child material → child placeholder-elaboration study. No participant data collection, analysis, results or preregistration is claimed by this review.
 

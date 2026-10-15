@@ -7,7 +7,7 @@ Kate, your adult study is in the same experiment folder as before. Use this guid
 1. Open **GitHub Desktop**. At the top left, choose **teleology** under **Current repository**.
 2. Under **Current Branch**, select **adult-norming-exp1**. If that name is already showing, leave it selected.
 3. Click **Fetch origin**. If the button changes to **Pull origin**, click that too. Fetch checks for updates; Pull brings them onto your computer.
-4. If **Pull origin** does not appear, your selected branch may already be up to date. Check **History** for **Polish adult norming study for review**. If you cannot find it, let David know before continuing.
+4. If **Pull origin** does not appear, your selected branch may already be up to date. Check **History** for **Polish instructions and remove study breaks**. If you cannot find it, let David know before continuing.
 
 If Desktop shows unfinished changes of your own or a conflict, keep those changes and ask David to help combine them. You do not need to discard your work, create another repository, or use a terminal.
 
@@ -22,9 +22,9 @@ Keep the folder together. The study works directly from the file; there is nothi
 ## What changed and why
 
 - The lab consent form now appears first. Choosing **I do NOT agree** ends the study; choosing **I agree** opens the instructions.
-- The instructions are centered. **Behavioral** comes last, with a fuller explanation of how it relates to the other categories.
-- A progress bar shows how much of the task is complete. Consent, instructions, and breaks do not move it forward.
-- The category buttons use the same neutral style. Their order is shuffled once for each session and stays fixed throughout that session.
+- The instructions use a two-column category table with larger category labels. **Behavioral** comes last, with a fuller explanation of how it relates to the other categories.
+- A progress bar shows how much of the task is complete. Consent and instructions do not move it forward. The 80 descriptions form one continuous task, without scheduled breaks.
+- The category buttons appear horizontally in the same neutral style. Their order is shuffled once for each session and stays fixed throughout that session. On smaller screens, the row wraps while preserving reading order.
 - The 80 phrases are shuffled separately for each session. The phrases and their IDs have stayed the same.
 - The saved **Ecological** response now maps to **Ecological-benefiting**, matching the original researcher label. This fixes the agreement calculation.
 
@@ -34,8 +34,8 @@ Please work through one complete test and make a short note of what you find:
 
 1. First try **I do NOT agree** and check that the study ends. Open the file again for the full test.
 2. Work through the consent and instructions. Note anything that is unclear or awkward.
-3. On the first phrase, write down the four buttons in order. Check that the order is still the same after each break.
-4. Confirm that breaks appear after 20, 40, and 60 responses, and that the progress bar is full at the end.
+3. On the first phrase, write down the four buttons in order. Check that the order is still the same later in the study.
+4. Confirm that all 80 descriptions proceed without break screens and that the progress bar is full at the end.
 5. Click **Download data (CSV)**. Open the downloaded file in Excel. It should contain **80 response rows, plus one header row**.
 6. Check a few rows against the choices you made. Look at **property_text**, **selected_label**, and **button_order**. **selected_position** is the button's position, counting from 1 in reading order.
 7. In **History**, open the update and look at **js/experiment.js**. Find the line beginning `const buttonOrder` before `order.forEach`. That is why the button order now stays fixed. The comments explain the two separate shuffles.

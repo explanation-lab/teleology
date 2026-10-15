@@ -6,19 +6,19 @@ Open **index.html** directly in a browser. The study uses bundled jsPsych 8.3.0 
 
 ## Current sequence
 
-Consent → instructions → 80 phrases, with breaks after 20, 40, and 60 responses → local CSV download.
+Consent → instructions with a category table → 80 phrases without scheduled breaks → local CSV download.
 
-Declining consent ends the session before the instructions and task. The progress bar is hidden on consent and instructions, starts at zero before the first response, and reaches 100% after the last response. It remains visible during breaks.
+Declining consent ends the session before the instructions and task. The progress bar is hidden on consent and instructions, starts at zero before the first response, and reaches 100% after the last response.
 
 The 80 phrases are shuffled once per session. The four labels are shuffled separately once per session and reused on every trial. The researcher-assigned categories remain hidden from participants. The stimulus IDs, wording, and 20-per-category membership are unchanged from Kate's original draft.
 
-The default button layout is stacked. For David's layout comparison, opening the study with `?layout=horizontal` uses one row of four buttons on a wide screen, two columns on a medium screen, and one column on a narrow screen. Reading order stays the same. This option does not add participant-facing settings.
+The buttons use one horizontal row on a wide screen, two columns on a medium screen, and one column on a narrow screen. Reading order stays the same. There is no layout selector. The instruction table gives each category a larger row label, with Behavioral last.
 
 ## Data
 
 Nothing is uploaded. Responses remain in browser memory until **Download data (CSV)** is clicked. Refreshing or closing the page before download discards the unsaved test. Online saving and the recruitment completion route still need a separate implementation.
 
-The CSV contains 80 task rows for a completed session. Alongside the original fields, it records `study_version`, `button_layout`, `consent_version`, and `consented`. `selected_label` stores the visible label; `selected_category` stores the original research category. In particular, **Ecological → Ecological-benefiting**. `matches_researcher_category` records agreement with the initial researcher label, not response accuracy. `selected_position` is 1-based reading order for either layout.
+The CSV contains 80 task rows for a completed session. Alongside the original fields, it records `study_version`, `button_layout`, `consent_version`, and `consented`. `selected_label` stores the visible label; `selected_category` stores the original research category. In particular, **Ecological → Ecological-benefiting**. `matches_researcher_category` records agreement with the initial researcher label, not response accuracy. `selected_position` is 1-based reading order. The obsolete `block_number` field is omitted because the task no longer has scheduled blocks.
 
 Use `?PID=YOUR_TEST_LABEL` to label a local test; otherwise a random review ID is generated. Opening the study again starts a fresh session and may produce the same random order by chance.
 
@@ -30,4 +30,4 @@ Before real collection, David will confirm that the consent's scenario descripti
 
 ## Checks
 
-From the repository root, `node tools/check-adult-norming.cjs` verifies all 24 possible button orders, response/category mapping, trial coverage, break positions, progress callbacks, consent paths and the preserved consent/stimulus content. Browser walkthroughs separately check the visible interface and the downloaded CSV.
+From the repository root, `node tools/check-adult-norming.cjs` verifies all 24 possible button orders, response/category mapping, 80 consecutive trials without breaks, horizontal layout, progress callbacks, consent paths and the preserved consent/stimulus content. Browser walkthroughs separately check the visible interface. The initial review also verified the CSV download; its historical receipt is kept separately from the current walkthrough.
