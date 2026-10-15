@@ -2,7 +2,7 @@
 
 Last updated: **2026-10-15** (America/New_York).
 
-- **Current stage:** local review of Kate's 80-item adult-norming prototype.
+- **Current stage:** approved adult-norming update; Kate's local walkthrough is next.
 - **Active experiment:** implemented for local testing; none launched for collection.
 - **Project Lead:** Kate Shon.
 - **Members:** Dhruv Sahu and Ethan Fisher-Dayn.
@@ -10,7 +10,7 @@ Last updated: **2026-10-15** (America/New_York).
 
 ## Current work and ownership
 
-**Adult study review:** Kate's original draft is PR #2, branch `adult-norming-exp1`, commit `a891557`. The consent, instruction, progress, button and category-mapping updates are being prepared on the local branch `codex/teleology-adult-review`. David must review the complete study and handoff before any push or communication to Kate. After approval, combine the reviewed update into her existing branch so she can Fetch/Pull in GitHub Desktop. Do not ask her to manage the review branch. See [START_HERE.md](START_HERE.md) for the proposed handoff.
+**Adult study review:** Kate's original draft is PR #2, branch `adult-norming-exp1`, commit `a891557`. David reviewed the revised study and the complete handoff, and approved pushing the update to that existing branch and emailing Kate the instructions on October 15. The consent, instruction, progress, button and category-mapping changes were developed on `codex/teleology-adult-review` and combined into `adult-norming-exp1` without rewriting Kate's history. Kate can Fetch/Pull in GitHub Desktop and follow [START_HERE.md](START_HERE.md); she does not need to manage the review branch.
 
 The remaining staffing and background notes below record the September planning state; they do not establish new assignments or deadlines.
 
@@ -22,7 +22,7 @@ The remaining staffing and background notes below record the September planning 
 
 ## Next milestone
 
-David has selected horizontal buttons and requested a polished category table and removal of scheduled breaks. He reviews the revised prototype, Kate's start guide and walkthrough task before anything is shared. Kate then completes a full local test and checks the CSV after the approved update is shared. Online saving, final recruitment settings and item-selection criteria remain later work. No research deadline is assigned by this review.
+Kate completes a full local test and checks the CSV using the approved study and start guide. David selected horizontal buttons, a polished category table and removal of scheduled breaks, and approved the revised prototype and handoff. Online saving, final recruitment settings and item-selection criteria remain later work. No research deadline is assigned by this review.
 
 ## Current, prior and future work
 
@@ -46,17 +46,17 @@ The project focuses on purpose placeholders. Candidate generation precedes adult
 
 ## Latest checkpoint
 
-Kate added the adult prototype on October 14 in PR #2. The October 15 updates are local and await David's review. This is a study-development checkpoint, not collection or launch approval.
+Kate added the adult prototype on October 14 in PR #2. David approved the October 15 revision and authorized the GitHub/email handoff. A complete browser walkthrough showed all 80 unique phrases without break screens, fixed button order, and 100% progress at completion. Focused logic checks passed across all 24 button orders and 7,680 response mappings. This is a study-development checkpoint, not collection or launch approval.
 
-Preserve meaningful work in Git. For this update, the explicit instruction is **no push and no handoff until David reviews it**. Keep the repository README and this status accurate.
+Preserve meaningful work in Git. David's review requirement for this update has been satisfied; his approval covers the reviewed changes and handoff instructions. Keep the repository README and this status accurate.
 
 ## Resume / handoff
 
 1. Read [README.md](README.md), this status file, and the [Teleology Dashboard](https://explanation-lab-dashboard.web.app/#project/TELEOLOGY/overview), including Decisions and Open Questions.
-2. Use [START_HERE.md](START_HERE.md) for the adult study and Kate's proposed next task. Consult the existing Paper Readings document for background.
-3. Complete David's review before combining the update into Kate's branch or sharing it. Preserve any concurrent work Kate has made.
+2. Use [START_HERE.md](START_HERE.md) for the adult study and Kate's walkthrough task. Consult the existing Paper Readings document for background.
+3. Continue on `adult-norming-exp1` and preserve any concurrent work Kate has made. Review her test CSV and questions before setting up collection.
 4. Coordinate in [#proj-teleology](https://explanationlab.slack.com/archives/C0C19J4RA81), then record durable decisions, questions and progress in the appropriate Dashboard or repository location. Private Weekly Check-Ins retain their mentoring/privacy role and are not the shared project record.
 
-The current local review branch is `codex/teleology-adult-review`, based on Kate's `a891557`. The entry point is `code/experiments/Experiment 1/index.html`. Run `node tools/check-adult-norming.cjs` for focused logic checks; browser verification and synthetic outputs are retained with David's local review package. No analysis pipeline is supplied.
+The shared study branch is `adult-norming-exp1`; the review changes originated from Kate's `a891557`. The entry point is `code/experiments/Experiment 1/index.html`. Run `node tools/check-adult-norming.cjs` for focused logic checks; browser verification and synthetic outputs are retained with David's local review package. No analysis pipeline is supplied.
 
 The first-month staffing plan recommended a weekly 60-minute full-lab meeting, 30-minute project-team meetings, and 15–20-minute Lead/David check-ins, with check-in frequency potentially decreasing as work becomes established. This is recommended coordination, not a permanent system rule or permission requirement.
