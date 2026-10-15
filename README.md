@@ -6,9 +6,11 @@ Do children represent that an animal has **something it is for** even when they 
 
 Believing that a purpose exists need not be the same as knowing its content. The purpose-placeholder hypothesis distinguishes **purpose existence** (“this animal has something it is for”) from **purpose knowledge** (“I know what it is for”). The project asks whether children can hold the first representation without the second, and which descriptions they accept as possible elaborations of it. Keeping those questions separate helps us avoid treating an answer about what an animal does as evidence that the child attributes a purpose to it.
 
-The research pipeline is **candidate item generation → adult norming → child placeholder-elaboration study**. The current phase is **candidate-item development / preparation for adult norming**. No Teleology experiment has been launched.
+The research pipeline is **candidate item generation → adult norming → child placeholder-elaboration study**. The current phase is **review of the adult-norming prototype**. No Teleology experiment has been launched.
 
 ## Start here
+
+**Working on the adult norming study? Read [Start here for the adult norming study](START_HERE.md).** It gives the GitHub Desktop steps, the study location, what changed and Kate's next walkthrough task. Open `code/experiments/Experiment 1/index.html` directly in a browser.
 
 Read this README for the science, then [PROJECT_STATUS.md](PROJECT_STATUS.md) for current ownership, milestones, unresolved choices and handoff. The team is **Kate Shon (Project Lead), Dhruv Sahu (Member), and Ethan Fisher-Dayn (Member)**. No Backup has been selected. Kate coordinates the project and helps turn the conceptual question into a testable plan. Ethan’s confirmed immediate work is candidate-pool revision/development; an individual assignment for Dhruv remains to be agreed.
 
@@ -16,7 +18,7 @@ Use the existing Dashboard project home and guided project introduction alongsid
 
 ## Current materials development
 
-Develop **25 unique, short, child-friendly candidate descriptions per working category**, paired with appropriate animals: about 100 descriptions overall, with additional alternatives welcome during development.
+The earlier development target was 25 descriptions per working category. The current adult-norming prototype uses **80 short descriptions, 20 per researcher-assigned category**, presented as phrases without animal names. This is the set being reviewed; additional alternatives can remain in the background material.
 
 | Working category | Intended distinction to evaluate |
 |---|---|
@@ -31,9 +33,9 @@ The existing [Paper Readings](https://docs.google.com/document/d/13lWP7D-J-v3Hgd
 
 ## Planned adult norming
 
-Adult norming precedes selection of final material for the child study. The current proposal is for adults to see an animal-description pair and classify it into one of the four working categories, with a **none/unclear** option. Its purpose is to establish how descriptions are perceived empirically, rather than assuming the team’s labels are uniquely correct.
+Adult norming precedes selection of final material for the child study. The current prototype asks adults to classify each of 80 phrases using **four category buttons**. Animal-description pairs and a none/unclear option belonged to the earlier proposal and are not in this version. Norming establishes how descriptions are perceived empirically, rather than assuming the team's labels are uniquely correct.
 
-An additional judgment about how natural a description sounds as something the animal could be “for” has been discussed; it is an **open proposed measure**, not a confirmed feature. Sample size, recruitment, exclusions, retention thresholds, consensus criteria, wording, trial structure, analysis and preregistration have not been established. No adult-norming experiment is implemented or launched in this repository.
+An additional judgment about how natural a description sounds as something the animal could be “for” has been discussed; it is an **open proposed measure**, not a confirmed feature. Sample size, recruitment, exclusions, retention thresholds, consensus criteria, analysis and preregistration remain to be finalized. The experiment is implemented for local review; responses download to the tester's computer. Online saving and recruitment have not been set up.
 
 ## Planned later child study
 
@@ -63,7 +65,7 @@ docs/                  Browser-renderable experiments or generated web output
 figures/               Plots, diagrams, screenshots and paper figures
 ```
 
-The repository currently contains these orientation files and directory guidance only. There are no experiment implementations, run commands, participant datasets, analyses, results or reproducible pipelines to execute. The prior exploratory material remains in the linked background document. Add actual inputs, dependencies, verified commands and expected outputs when implementation exists; keep current, superseded and planned work distinguishable.
+The adult prototype is in `code/experiments/Experiment 1/`; its README explains the sequence and data fields. `tools/check-adult-norming.cjs` provides focused logic checks. There are no participant datasets, analyses or results in this repository. The prior exploratory material remains in the linked background document.
 
 `docs/` is not a general literature/meeting-notes directory. Add a different directory deliberately if the work later needs one, rather than forcing scientific prose into a generated-output folder.
 
