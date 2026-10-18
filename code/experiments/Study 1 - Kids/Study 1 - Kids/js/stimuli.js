@@ -1,0 +1,53 @@
+// ============================================================
+// STIMULI  (edit this file to swap in the real items)
+// ------------------------------------------------------------
+// 5 animals x 4 properties, one property per category.
+// All property text is PLACEHOLDER until the adult norming study
+// finishes. Replace each `text` with the real top-5 item.
+// Write `text` as a short phrase that fits both:
+//   "Here is something about the Zorp: {text}."
+//   "...is {text} for helping people?"   (e.g., "building dams")
+// ============================================================
+
+const CATEGORIES = ["behavioral", "ecological", "animal_benefit", "human_benefit"];
+
+// How each category appears inside the test question: "is {property} for ____?"
+const CATEGORY_QUESTION = {
+  behavioral:     "just how it likes to act",
+  ecological:     "helping nature and the places where animals live",
+  animal_benefit: "helping the animal itself or other animals",
+  human_benefit:  "helping people"
+};
+
+const ANIMALS = [
+  { id: "A1", name: "Zorp",    image: "assets/animals/zorp.svg",
+    properties: [
+      { id: "B1", category: "behavioral",     text: "[PLACEHOLDER behavioral 1]" },
+      { id: "E1", category: "ecological",     text: "[PLACEHOLDER ecological 1]" },
+      { id: "N1", category: "animal_benefit", text: "[PLACEHOLDER animal-benefiting 1]" },
+      { id: "H1", category: "human_benefit",  text: "[PLACEHOLDER human-benefiting 1]" } ] },
+  { id: "A2", name: "Dax",     image: "assets/animals/dax.svg",
+    properties: [
+      { id: "B2", category: "behavioral",     text: "[PLACEHOLDER behavioral 2]" },
+      { id: "E2", category: "ecological",     text: "[PLACEHOLDER ecological 2]" },
+      { id: "N2", category: "animal_benefit", text: "[PLACEHOLDER animal-benefiting 2]" },
+      { id: "H2", category: "human_benefit",  text: "[PLACEHOLDER human-benefiting 2]" } ] },
+  { id: "A3", name: "Wug",     image: "assets/animals/wug.svg",
+    properties: [
+      { id: "B3", category: "behavioral",     text: "[PLACEHOLDER behavioral 3]" },
+      { id: "E3", category: "ecological",     text: "[PLACEHOLDER ecological 3]" },
+      { id: "N3", category: "animal_benefit", text: "[PLACEHOLDER animal-benefiting 3]" },
+      { id: "H3", category: "human_benefit",  text: "[PLACEHOLDER human-benefiting 3]" } ] },
+  { id: "A4", name: "Blicket", image: "assets/animals/blicket.svg",
+    properties: [
+      { id: "B4", category: "behavioral",     text: "[PLACEHOLDER behavioral 4]" },
+      { id: "E4", category: "ecological",     text: "[PLACEHOLDER ecological 4]" },
+      { id: "N4", category: "animal_benefit", text: "[PLACEHOLDER animal-benefiting 4]" },
+      { id: "H4", category: "human_benefit",  text: "[PLACEHOLDER human-benefiting 4]" } ] },
+  { id: "A5", name: "Fep",     image: "assets/animals/fep.svg",
+    properties: [
+      { id: "B5", category: "behavioral",     text: "[PLACEHOLDER behavioral 5]" },
+      { id: "E5", category: "ecological",     text: "[PLACEHOLDER ecological 5]" },
+      { id: "N5", category: "animal_benefit", text: "[PLACEHOLDER animal-benefiting 5]" },
+      { id: "H5", category: "human_benefit",  text: "[PLACEHOLDER human-benefiting 5]" } ] }
+];
