@@ -1,0 +1,26 @@
+:root {
+    --sky: #dff1fb;
+    --ink: #1f3a4d;
+    --sun: #ffc93c;
+    --yes: #3fae5a;
+    --no: #e8674f;
+    --card: #ffffff;
+}
+
+html, body { background: var(--sky); color: var(--ink); font-family: "Fredoka", "Trebuchet MS", "Arial Rounded MT Bold", sans-serif;}
+.jspsych-content { max-width: 900px; }
+.stage { background: var(--card); border: 6px solid var(--sun); border-radius: 32px; padding: 28px 36px; margin: 16px auto; }
+.big { font-size: 40px; line-height: 1.3; margin: 12px 0; font-weight: 600; }
+.mid { font-size: 32px; line-height: 1.35; margin: 12px 0; }
+.animal-img { width: min(380px, 60vw); height: auto; display: block; margin: 8px auto; }
+.animal-name { color: #c4570a; }
+.prop { font-weight: 600; background: #fff3cc; border-radius: 16px; padding: 2px 12px; }
+.mini-animal { width: 130px; height: auto; vertical-align: middle; }
+.jspsych-btn { font-family: inherit; font-size: 36px; font-weight: 600; color: #fff; border: none; border-radius: 28px; 
+    min-width: 190px; padding: 18px 36px; margin: 14px 18px; cursor: pointer; box-shadow: 0 6px 0 rgba(0,0,0,.18); }
+.jspsych-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 rgba(0,0,0,.18); }
+.jspsych-btn:focus-visible { outline: 6px solid var(--ink); outline-offset: 3px; }
+.btn-next { background: #2f80c9; }
+.btn-yes { background: var(--yes); }
+.btn-no { background: var(--no); }
+@media (max-width: 600px) { .big { font-size: 30px; } .mid { font-size: 26px; } .jspsych-btn { min-width: 140px; font-size: 28px; } }
