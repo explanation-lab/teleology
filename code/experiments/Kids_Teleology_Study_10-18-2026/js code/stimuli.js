@@ -1,20 +1,17 @@
 // STIMULI (edit this file to swap in real items)
 
 // 5 animals x 4 properties, one property per category.
-// All property text is PLACEHOLDER until the adult norming study finishes. Replace each 'text' with the real top 5 item.
-// Write 'text' as a short phrase that fits both:
-//      "Here is something about the Zorp: {text}."
-//      "...is {text} for helping people?" (e.g., "building dams")
+// All property text is PLACEHOLDER until the adult norming study finishes. Replace each 'text' with the real item
+//The categories are only used to select/organize materials and are saved in teh data. C
+// Each propertys text appears in two sentences, so it must read naturally in both
+//      "This is a Zorp. Zorps {intro text},..., and..." (intro screen)
+//      "Is a zorp for {text}?"                             (question screen)
+// if one phase can't do both (e.g., building dams vs build dams), give the proerty an introText in addition to 'text'; the introduciton uses introText when it is present
+
+
+
 
 const CATEGORIES = ["behavioral", "ecological", "animal_benefit", "human_benefit"];
-
-// how each category appears inside the test question: "is {property} for ____?"
-const CATEGORY_QUESTION = {
-    behavioral: "just how it likes to act",
-    ecological: "helping nature and the places where animals live",
-    animal_benefit: "helping the animal itself or other animals",
-    human_benefit: "helping people"
-};
 
 const ANIMALS = [
     {id: "A1", name: "Zorp", image: "assets/animals/zorp.svg",
