@@ -193,8 +193,8 @@ timeline.push(screen(
 ));
 
 // 3. practice
-timeline.push(practiceBlock("assets/practice/bird.svg", "Is this a bird?", 0, "bird_yes")); 
-timeline.push(practiceBlock("assets/practice/dog.svg", "Is this a cat?", 1, "dog_no"));
+timeline.push(practiceBlock("assets/animals/bird.svg", "Is this a bird?", 0, "bird_yes")); 
+timeline.push(practiceBlock("assets/animals/dog.svg", "Is this a cat?", 1, "dog_no"));
 
 // 4. thank you with fireworks
 timeline.push(screen(
@@ -231,7 +231,7 @@ animalOrder.forEach((animalIdx, pos) =>{
     // transition
     timeline.push(screen(
         `<img class="mini-animal" src="${animal.image}" alt="">
-        <p class="big">Now that you have learned about the ${animal.name}, we want to ask you about what the ${animal.name} is for.</p>`,
+        <p class="big">Now that you have learned about ${animal.name}s, we want to ask you about what ${animal.name}s are for.</p>`,
         "Next", Object.assign({screen: "questions_intro"}, baseData)
     ));
 
