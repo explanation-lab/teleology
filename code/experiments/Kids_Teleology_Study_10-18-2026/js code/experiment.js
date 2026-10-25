@@ -194,7 +194,7 @@ timeline.push(screen(
 
 // 3. practice
 timeline.push(practiceBlock("assets/animals/bird.svg", "Is this a bird?", 0, "bird_yes")); 
-timeline.push(practiceBlock("assets/animals/dog.svg", "Is this a cat?", 1, "dog_no"));
+timeline.push(practiceBlock("assets/animals/giraffe.svg", "Is this a cat?", 1, "giraffe_no"));
 
 // 4. thank you with fireworks
 timeline.push(screen(
@@ -209,6 +209,7 @@ timeline.push(screen(
 // 5. Animals
 animalOrder.forEach((animalIdx, pos) =>{
     const animal = ANIMALS[animalIdx]; 
+    const pluralName = animal.name === "Dax" ? "Daxes" : `${animal.name}s`;
     const baseData = {animal: animal.name, animal_id: animal.id, animal_position: pos + 1}; 
 
     // intro
@@ -216,13 +217,13 @@ animalOrder.forEach((animalIdx, pos) =>{
     const introText = (p) => p.introText || p.text; 
     const chips = introProps.map((p, i) => 
     `<span class="prop">${introText(p)}</span>${i < 2 ? "," : i ===2 ? ", and" : "."}`).join(" ");
-    const spokenIntro = `This is a ${animal.name}. ${animal.name}s ` + 
+    const spokenIntro = `This is a ${animal.name}. ${pluralName} ` +
     introProps.map((p, i) => (i === 3 ? "and " : "") + introText(p)).join(", ")+".";
     timeline.push(screen(
         `<p class="big">This is a <span class="animal-name">${animal.name}</span>.</p>
         <div class="intro-row">
         <img class="animal-img" src="${animal.image}" alt="A ${animal.name}">
-        <p class="mid intro-text">${animal.name}s ${chips}</p>
+        <p class="mid intro-text">${pluralName} ${chips}</p>
         </div>`, 
         "Next", Object.assign({screen: "animal_intro", intro_order: introProps.map(p =>p.id).join("|")}, baseData),
         {spoken: spokenIntro}     
@@ -231,7 +232,7 @@ animalOrder.forEach((animalIdx, pos) =>{
     // transition
     timeline.push(screen(
         `<img class="mini-animal" src="${animal.image}" alt="">
-        <p class="big">Now that you have learned about ${animal.name}s, we want to ask you about what ${animal.name}s are for.</p>`,
+        <p class="big">Now that you have learned about ${pluralName}, we want to ask you about what ${pluralName} are for.</p>`,
         "Next", Object.assign({screen: "questions_intro"}, baseData)
     ));
 
