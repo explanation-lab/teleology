@@ -92,10 +92,11 @@ const STIMULI = [
 ];
 
 // Participant-facing button label  ->  original research category (kept in the data).
-// Ecological is the short display label; retain the original stored category.
+// Only the keys (left side) are shown to participants; the values (right side) are the
+// original research labels and must match the "category" values above.
 const CATEGORY_LABELS = {
-  "Behavioral":            "Behavioral",
-  "Ecological": "Ecological-benefiting",
-  "Animal-benefiting":     "Animal-benefiting",
-  "Human-benefiting":      "Human-benefiting"
+  "Behavioral":       "Behavioral",
+  "Ecological":       "Ecological-benefiting",
+  "Self-benefiting":  "Animal-benefiting",
+  "Human-benefiting": "Human-benefiting"
 };

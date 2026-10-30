@@ -1,125 +1,109 @@
-// Teleology & Placeholders — adult norming, local review version.
-// Open index.html directly. Responses stay in this browser until CSV download.
-const STUDY_VERSION = "adult-norming-review-2026-10-15-v2";
-const N = STIMULI.length;
-
-const BUTTON_LAYOUT = "horizontal";
-let consentDeclined = false;
-
-function updateProgress(completed) {
-  const progress = document.getElementById("study-progress");
-  const percent = Math.round(completed / N * 100);
-  progress.hidden = false;
-  progress.querySelector("[role=progressbar]").setAttribute("aria-valuenow", completed);
-  progress.querySelector("[role=progressbar]").setAttribute("aria-valuemax", N);
-  progress.querySelector("[role=progressbar]").setAttribute("aria-valuetext", `${completed} of ${N} descriptions completed`);
-  progress.querySelector(".progress-fill").style.width = `${percent}%`;
-  progress.querySelector(".progress-percent").textContent = `${percent}%`;
-}
+// experiment.js -- Teleology & Placeholders, Adult Norming (Experiment 1), jsPsych v8
+// ---------------------------------------------------------------------------
+// SETTINGS
+// LOCAL_TESTING = true : a "Download data (CSV)" button appears on the final screen.
+//   Data stay in the browser until downloaded. NOTHING is sent to a server.
+// For real data collection, set to false AND add server-side saving (see README).
+const LOCAL_TESTING = true;
+const TRIALS_PER_BLOCK = 20;
+// ---------------------------------------------------------------------------
 
 const jsPsych = initJsPsych({
-  display_element: "experiment",
   on_finish: function () {
-    jsPsych.getDisplayElement().innerHTML = consentDeclined
-      ? '<div class="center"><h1>Thank you</h1><p>You have chosen not to participate. You may close this window.</p></div>'
-      : '<div class="center"><h1>Thank you for participating!</h1><p>Your CSV download has been requested.</p><p>You may close this window when you have saved your file.</p></div>';
+    // jsPsych clears the screen when the timeline ends, so show a final message.
+    document.body.innerHTML = '<div class="jspsych-content-wrapper"><div class="jspsych-content center">' +
+      '<h1>Thank you for participating!</h1>' +
+      (LOCAL_TESTING ? '<p>(Local test: your CSV file has been downloaded.)</p>' : '') + '</div></div>';
   }
 });
 
-// Use ?PID=abc123 for a labeled local test, or create a random review ID.
+// Participant ID: use ?PID=abc123 in the URL if present (e.g. from Prolific/MTurk), else make a random one.
 const participantId = jsPsych.data.getURLVariable("PID") ||
   "P" + Math.random().toString(36).slice(2, 8).toUpperCase();
-jsPsych.data.addProperties({
-  participant_id: participantId,
-  study_version: STUDY_VERSION,
-  button_layout: BUTTON_LAYOUT,
-  consent_version: "evolution-standard-copy-2026-10-15"
-});
+jsPsych.data.addProperties({ participant_id: participantId });
 
-const LABELS = Object.keys(CATEGORY_LABELS);
-// Shuffle once for this participant, then reuse this exact order on all trials.
-const buttonOrder = jsPsych.randomization.shuffle(LABELS.slice());
-// Each participant sees every phrase once in a shuffled order.
-const order = jsPsych.randomization.shuffle(STIMULI.slice());
+const LABELS = Object.keys(CATEGORY_LABELS); // the four participant-facing labels
+const BUTTON_CLASS = { "Behavioral": "red", "Ecological": "green", "Self-benefiting": "yellow", "Human-benefiting": "blue" };
+const N = STIMULI.length;                    // 80
+
 const timeline = [];
 
-// The consent text is the same form used in the Evolution review study.
-timeline.push({
-  type: jsPsychHtmlButtonResponse,
-  stimulus: TELEOLOGY_CONSENT,
-  choices: ["I agree", "I do NOT agree"],
-  css_classes: ["consent-screen"],
-  data: { task: "consent" },
-  on_finish: function (data) {
-    data.consented = data.response === 0;
-    if (!data.consented) {
-      consentDeclined = true;
-      jsPsych.abortExperiment();
-    } else {
-      jsPsych.data.addProperties({ consented: true });
-    }
-  }
-});
-
+// Screen 1: welcome / instructions (no auto-advance)
 timeline.push({
   type: jsPsychHtmlButtonResponse,
   stimulus: `<div class="intro">
     <h1>Welcome!</h1>
     <p>In this study, you will see short descriptions of things animals do or have.</p>
     <p>For each description, choose the category that you think fits best.</p>
-    <div class="category-table-wrap">
-      <table class="category-definitions" aria-label="The four categories">
-        <thead><tr><th scope="col">Category</th><th scope="col">Description</th></tr></thead>
-        <tbody>
-          <tr><th scope="row">Ecological</th><td>Something involving effects or benefits to another organism or the broader environment.</td></tr>
-          <tr><th scope="row">Animal-benefiting</th><td>Something that benefits the animal itself.</td></tr>
-          <tr><th scope="row">Human-benefiting</th><td>Something useful or beneficial to people.</td></tr>
-          <tr><th scope="row">Behavioral</th><td>Something the animal simply does, which may not have a clear animal-benefiting, ecological, or human-benefiting function.</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="instruction-note">Some descriptions may fit more than one category.<br>Please choose the one you think fits best.</p>
-  </div>`,
+    <p>The four categories are:</p>
+    <dl>
+      <dt>Behavioral:</dt><dd>Something an animal does.</dd>
+      <dt>Ecological:</dt><dd>Something that helps the environment.</dd>
+      <dt>Self-benefiting:</dt><dd>Something that helps the animal itself.</dd>
+      <dt>Human-benefiting:</dt><dd>Something that helps people.</dd>
+    </dl>
+    <p>Some descriptions may fit more than one category. Please choose the one you think fits best.</p>
+    <p>There will be breaks provided during the study.</p>
+    <p>The order of the buttons will change after each description, so please read each button before you choose.</p>
+    <p>Click 'Begin' when you are ready.</p></div>`,
   choices: ["Begin"],
-  css_classes: ["single-btn", "instructions-screen"],
+  css_classes: ["single-btn"],
   data: { task: "instructions" }
 });
 
+// Screen 2 + 3: trials and breaks.
+// The order of the 80 stimuli is shuffled once per participant; the button order is
+// shuffled separately for every trial. Both are fixed here, when the timeline is built.
+const order = jsPsych.randomization.shuffle(STIMULI.slice());
+
 order.forEach((stim, i) => {
   const trialNumber = i + 1;
+  const blockNumber = Math.floor(i / TRIALS_PER_BLOCK) + 1;
+  const buttonOrder = jsPsych.randomization.shuffle(LABELS.slice());
 
   timeline.push({
     type: jsPsychHtmlButtonResponse,
-    stimulus: `<div class="property">${stim.text}</div>
-      <div class="question">Which category best describes this property?</div>`,
-    choices: buttonOrder,
-    css_classes: ["category-screen", `layout-${BUTTON_LAYOUT}`],
+    stimulus: `<div class="progress">Description ${trialNumber} of ${N}</div>
+               <div class="property">${stim.text}</div>
+               <div class="question">Which category best describes this property?</div>`,
+    choices: buttonOrder,            // choices[response] is always the label that was clicked
+    button_html: (choice) => `<button class="jspsych-btn cat-${BUTTON_CLASS[choice]}" data-choice="${choice}">${choice}</button>`,
     button_layout: "grid",
-    grid_columns: 4,
-    grid_rows: null,
-    post_trial_gap: 300,
+    grid_columns: 2,
+    post_trial_gap: 300,             // brief blank screen so a double-click can't hit the next trial
     data: {
       task: "trial",
       stimulus_id: stim.id,
       property_text: stim.text,
       researcher_category: stim.category,
       trial_number: trialNumber,
+      block_number: blockNumber,
       button_order: buttonOrder.join(" | ")
     },
-    on_start: function () { updateProgress(i); },
     on_finish: function (data) {
-      const chosen = buttonOrder[data.response];
-      data.selected_label = chosen;
-      data.selected_category = CATEGORY_LABELS[chosen];
-      // Position is the 1-based reading order, including responsive layouts.
-      data.selected_position = data.response + 1;
+      const chosen = buttonOrder[data.response];          // label of the button actually clicked
+      data.selected_label = chosen;                       // participant-facing label
+      data.selected_category = CATEGORY_LABELS[chosen];   // original research category label
+      data.selected_position = data.response + 1;         // 1 = top-left, 2 = top-right, 3 = bottom-left, 4 = bottom-right
       data.matches_researcher_category = (data.selected_category === stim.category);
-      updateProgress(trialNumber);
     }
   });
 
+  if (trialNumber % TRIALS_PER_BLOCK === 0 && trialNumber < N) {
+    timeline.push({
+      type: jsPsychHtmlButtonResponse,
+      stimulus: `<div class="center"><h1>You are doing great!</h1>
+        <p>You have completed ${trialNumber} out of ${N} descriptions.</p>
+        <p>Feel free to take a short break.</p>
+        <p>Click 'Continue' whenever you are ready.</p></div>`,
+      choices: ["Continue"],
+      css_classes: ["single-btn"],
+      data: { task: "break", completed: trialNumber }
+    });
+  }
 });
 
+// Screen 4: completion
 const COLUMNS_TO_DROP = ["response", "stimulus", "trial_type", "trial_index", "plugin_version",
   "time_elapsed", "task", "jspsych_version", "view_history"];
 function saveCsv() {
@@ -131,11 +115,10 @@ timeline.push({
   stimulus: `<div class="center"><h1>Thank you for participating!</h1>
     <p>You have completed all ${N} descriptions.</p>
     <p>Your responses will help us understand how people think about the purposes and characteristics of animals.</p></div>`,
-  choices: ["Download data (CSV)"],
+  choices: LOCAL_TESTING ? ["Download data (CSV)"] : [],
   css_classes: ["single-btn"],
   data: { task: "completion" },
-  on_start: function () { updateProgress(N); },
-  on_finish: saveCsv
+  on_finish: function () { if (LOCAL_TESTING) saveCsv(); }
 });
 
 jsPsych.run(timeline);
