@@ -11,14 +11,14 @@
 
 
 
-const CATEGORIES = ["behavioral", "ecological", "animal_benefit", "human_benefit"];
+const CATEGORIES = ["behavioral", "ecological", "self_benefit", "human_benefit"];
 
 const ANIMALS = [
     {id: "A1", name: "Zorp", image: "assets/animals/zorp.svg",
         properties: [
             {id: "B1", category: "behavioral", text: "[PLACEHOLDER behavioral 1]"},
             {id: "E1", category: "ecological", text: "[PLACEHOLDER ecological 1]"},
-            {id: "N1", category: "animal_benefit", text: "[PLACEHOLDER animal-benefiting 1]"},
+            {id: "N1", category: "self_benefit", text: "[PLACEHOLDER self-benefiting 1]"},
             {id: "H1", category: "human_benefit", text: "[PLACEHOLDER human-benefiting 1]"},
         ]
     },
@@ -26,7 +26,7 @@ const ANIMALS = [
         properties: [
             {id: "B2", category: "behavioral", text: "[PLACEHOLDER behavioral 2]"},
             {id: "E2", category: "ecological", text: "[PLACEHOLDER ecological 2]"},
-            {id: "N2", category: "animal_benefit", text: "[PLACEHOLDER animal-benefiting 2]"},
+            {id: "N2", category: "self_benefit", text: "[PLACEHOLDER self-benefiting 2]"},
             {id: "H2", category: "human_benefit", text: "[PLACEHOLDER human-benefiting 2]"},
         ]
     },
@@ -34,7 +34,7 @@ const ANIMALS = [
         properties: [
             {id: "B3", category: "behavioral", text: "[PLACEHOLDER behavioral 3]"},
             {id: "E3", category: "ecological", text: "[PLACEHOLDER ecological 3]"},
-            {id: "N3", category: "animal_benefit", text: "[PLACEHOLDER animal-benefiting 3]"},
+            {id: "N3", category: "self_benefit", text: "[PLACEHOLDER self-benefiting 3]"},
             {id: "H3", category: "human_benefit", text: "[PLACEHOLDER human-benefiting 3]"},
         ]
     },
@@ -42,7 +42,7 @@ const ANIMALS = [
         properties: [
             {id: "B4", category: "behavioral", text: "[PLACEHOLDER behavioral 4]"},
             {id: "E4", category: "ecological", text: "[PLACEHOLDER ecological 4]"},
-            {id: "N4", category: "animal_benefit", text: "[PLACEHOLDER animal-benefiting 4]"},
+            {id: "N4", category: "self_benefit", text: "[PLACEHOLDER self-benefiting 4]"},
             {id: "H4", category: "human_benefit", text: "[PLACEHOLDER human-benefiting 4]"},
         ]
     },
@@ -50,7 +50,7 @@ const ANIMALS = [
         properties: [
             {id: "B5", category: "behavioral", text: "[PLACEHOLDER behavioral 5]"},
             {id: "E5", category: "ecological", text: "[PLACEHOLDER ecological 5]"},
-            {id: "N5", category: "animal_benefit", text: "[PLACEHOLDER animal-benefiting 5]"},
+            {id: "N5", category: "self_benefit", text: "[PLACEHOLDER self-benefiting 5]"},
             {id: "H5", category: "human_benefit", text: "[PLACEHOLDER human-benefiting 5]"},
         ]
     },
