@@ -2,7 +2,8 @@
 //
 // URL options
 //     ?pid=7       participant number
-//     ?audio=1     read screens aloud using the browser's speech synthesis
+//     ?order=0|1   explicit counterbalance schedule (otherwise participant parity)
+// The study is silent, with timed visual option cues ready for future audio.
 //
 // Flow: welcome -> how to answer -> practice -> thank-you + fireworks ->
 //       for each creature (random order):
@@ -12,11 +13,13 @@
 //           neutral thank-you before the next creature
 //       -> end
 //
-// Random per child: creature order, feature order on the meet screen, left/right button position.
+// Creature order is random. Two reversed feature-order schedules alternate by
+// participant number: each creature is eco-first for one group and self-first for
+// the other. Introduction, spoken answer order, and left/right buttons all agree.
 // Each child answers 5 questions (one per creature). Data downloads as a CSV when finished.
 
 const urlParams = new URLSearchParams(window.location.search);
-const SPEAK = urlParams.get("audio") === "1";
+const SHOW_OPTION_CUES = true;
 
 function resolveParticipantId() {
     const fromUrl = parseInt(urlParams.get("pid"), 10);
@@ -31,6 +34,11 @@ function resolveParticipantId() {
 }
 
 const PARTICIPANT = resolveParticipantId();
+const requestedOrder = urlParams.get("order");
+const ORDER_GROUP = requestedOrder === "0" || requestedOrder === "1"
+    ? Number(requestedOrder) : ((PARTICIPANT % 2) + 2) % 2;
+const ORDER_SOURCE = requestedOrder === "0" || requestedOrder === "1"
+    ? "url_condition" : urlParams.has("pid") ? "participant_number" : "local_counter";
 const SESSION = "choice" + PARTICIPANT + "_" + Date.now();
 
 const jsPsych = initJsPsych({
@@ -41,68 +49,64 @@ const jsPsych = initJsPsych({
 
 // ---------- helpers ----------
 
-// Reads text aloud (audio mode only). onDone runs when speech ends; onFail runs if speech is
-// unavailable or blocked. Swap this function out to use recorded audio files later.
-function speak(text, onDone, onFail) {
-    if (!SPEAK || !window.speechSynthesis) { if (onFail) onFail(); return; }
-    window.speechSynthesis.cancel();
-    const clean = text.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-    const utterance = new SpeechSynthesisUtterance(clean);
-    utterance.rate = 0.85;
-    let finished = false, timer;
-    const settle = (ok) => {
-        if (finished) return;
-        finished = true;
-        clearTimeout(timer);
-        if (ok && onDone) onDone();
-        if (!ok && onFail) onFail();
-    };
-    utterance.onend = () => settle(true);
-    utterance.onerror = (e) => {
-        if (e.error === "interrupted" || e.error === "canceled") { finished = true; clearTimeout(timer); return; }
-        settle(false);
-    };
-    timer = setTimeout(() => settle(true), clean.split(" ").length * 600 + 4000);
-    window.speechSynthesis.speak(utterance);
-}
-
 const panel = (html, extraClass) => `<div class="panel ${extraClass || ""}">${html}</div>`;
 
-// Info screen with a single button. opts: auto (advance when narration ends, audio mode only),
-// spoken (text to read if different from the screen), panelClass, on_load, on_finish
+function readOptions(question, labels) {
+    const reader = OptionNarration.create({
+        question, labels,
+        buttons: document.querySelectorAll("#jspsych-html-button-response-btngroup .btn-pick"),
+        // A future recording adapter can supply the start/end callbacks here.
+        speak: null,
+        visual: SHOW_OPTION_CUES
+    });
+    if (SHOW_OPTION_CUES) {
+        const replay = document.createElement("button");
+        replay.type = "button";
+        replay.className = "btn btn-replay";
+        replay.textContent = "Show the choices again";
+        replay.addEventListener("click", () => reader.start());
+        document.querySelector(".jspsych-content").appendChild(replay);
+    }
+    reader.start();
+    return reader;
+}
+
+function finishReading(reader, data) {
+    const state = reader ? reader.snapshot() : {mode: "silent", status: "off"};
+    data.option_presentation_mode = state.mode;
+    data.option_reading_status_at_response = state.status;
+    if (reader) reader.stop();
+}
+
+// Silent info screen with a single button. Animation hooks are retained.
 function infoScreen(html, buttonLabel, extraData, opts) {
     opts = opts || {};
-    const autoAdvance = SPEAK && opts.auto;
-    let done = false;
     return {
         type: jsPsychHtmlButtonResponse,
         stimulus: panel(html, opts.panelClass),
         choices: [buttonLabel],
-        button_html: (c) => `<button class="btn btn-go${autoAdvance ? " hidden" : ""}">${c}</button>`,
+        button_html: (c) => `<button class="btn btn-go">${c}</button>`,
         data: Object.assign({phase: "info"}, extraData || {}),
         on_load: () => {
-            done = false;
-            const btn = document.querySelector(".btn-go");
-            speak(opts.spoken || html,
-                autoAdvance ? () => { if (!done) jsPsych.finishTrial(); } : null,
-                autoAdvance ? () => btn.classList.remove("hidden") : null);
             if (opts.on_load) opts.on_load();
         },
-        on_finish: () => { done = true; if (opts.on_finish) opts.on_finish(); }
+        on_finish: () => { if (opts.on_finish) opts.on_finish(); }
     };
 }
 
 // Two-button choice screen. `options` is in DISPLAY order (left to right). Each option is
 // {label, ...anything}. The chosen option object is passed to on_finish as d.chosen_option.
 function choiceScreen(html, spokenText, options, data, on_finish) {
+    let reader = null;
     return {
         type: jsPsychHtmlButtonResponse,
         stimulus: panel(html),
         choices: options.map(o => o.label),
         button_html: (c) => `<button class="btn btn-pick">${c}</button>`,
-        on_load: () => speak(spokenText),
+        on_load: () => { reader = readOptions(spokenText, options.map(option => option.label)); },
         data: data,
         on_finish: (d) => {
+            finishReading(reader, d);
             d.chosen_option = options[d.response];
             if (on_finish) on_finish(d);
         }
@@ -113,6 +117,7 @@ function choiceScreen(html, spokenText, options, data, on_finish) {
 function practiceTrial(item) {
     let attempts = 0;
     let shown = [];
+    let reader = null;
     const retryPrefix = () => attempts > 0 ? "Let's look again. " : "";
     return {
         timeline: [{
@@ -128,9 +133,12 @@ function practiceTrial(item) {
                 return shown.map(o => o.label);
             },
             button_html: (c) => `<button class="btn btn-pick">${c}</button>`,
-            on_load: () => speak(`${retryPrefix()}What is this? ${shown.map(o => o.label).join(", or ")}?`),
+            on_load: () => { reader = readOptions(`${retryPrefix()}What is this?`, shown.map(o => o.label)); },
             data: {phase: "practice", practice_item: item.id},
-            on_finish: (d) => { d.correct = shown[d.response].correct; }
+            on_finish: (d) => {
+                finishReading(reader, d);
+                d.correct = shown[d.response].correct;
+            }
         }],
         loop_function: (data) => {
             attempts++;
@@ -218,43 +226,53 @@ timeline.push(infoScreen(
 // 5. Creatures
 creatureOrder.forEach((creatureIdx, position) => {
     const creature = CREATURES[creatureIdx];
+    const pluralName = creature.name === "Dax" ? "Daxes" : `${creature.name}s`;
     const eco = creature.ecoFeature;
     const self = creature.selfFeature;
     const featureIntroText = (f) => f.introText || f.text;
     const baseData = {animal: creature.name, animal_id: creature.id, animal_position: position + 1};
 
-    // meet screen: both features, random order
-    const meetOrder = jsPsych.randomization.shuffle([eco, self]);
+    // Reverse the assignment for each creature in the other participant group.
+    // With five creatures, each participant gets a 3/2 split; paired groups give
+    // every creature each first-mentioned category equally often.
+    const ecoFirst = (ORDER_GROUP + creatureIdx) % 2 === 0;
+    const ecoOption = {label: "for " + eco.text, feature: eco, kind: "ecological"};
+    const selfOption = {label: "for " + self.text, feature: self, kind: "self_benefit"};
+    const options = ecoFirst ? [ecoOption, selfOption] : [selfOption, ecoOption];
+    const meetOrder = options.map(option => option.feature);
+    const orderData = {
+        counterbalance_group: ORDER_GROUP,
+        counterbalance_source: ORDER_SOURCE,
+        first_kind: options[0].kind,
+        second_kind: options[1].kind,
+        eco_mentioned_first: ecoFirst ? 1 : 0
+    };
     const tags = meetOrder.map(f => `<span class="feature-tag">${featureIntroText(f)}</span>`).join(" and ");
-    const spokenMeet = `This is a ${creature.name}. ${creature.name}s ${meetOrder.map(featureIntroText).join(" and ")}.`;
+    const spokenMeet = `This is a ${creature.name}. ${pluralName} ${meetOrder.map(featureIntroText).join(" and ")}.`;
     timeline.push(infoScreen(
         `<p class="headline">This is a <span class="creature-name">${creature.name}</span>.</p>
         <div class="meet-row">
             <img class="creature-pic" src="${creature.image}" alt="A ${creature.name}">
-            <p class="subline meet-text">${creature.name}s ${tags}.</p>
+            <p class="subline meet-text">${pluralName} ${tags}.</p>
         </div>`,
         "Next",
-        Object.assign({screen: "meet_creature", meet_order: meetOrder.map(f => f.id).join("|")}, baseData),
+        Object.assign({screen: "meet_creature", meet_order: meetOrder.map(f => f.id).join("|")}, baseData, orderData),
         {spoken: spokenMeet}
     ));
 
     // transition
     timeline.push(infoScreen(
         `<img class="mini-pic" src="${creature.image}" alt="">
-        <p class="headline">Now that you have learned about ${creature.name}s, we want to ask you about what ${creature.name}s are for.</p>`,
+        <p class="headline">Now that you have learned about ${pluralName}, we want to ask you about what ${pluralName} are for.</p>`,
         "Next", Object.assign({screen: "question_intro"}, baseData)
     ));
 
-    // the forced-choice question; left/right position is random
-    const options = jsPsych.randomization.shuffle([
-        {label: "for " + eco.text,  feature: eco,  kind: "ecological"},
-        {label: "for " + self.text, feature: self, kind: "self_benefit"}
-    ]);
+    // The first introduced and first spoken option is always the left button.
     timeline.push(choiceScreen(
         `<img class="mini-pic" src="${creature.image}" alt="">
         <p class="headline">What is a ${creature.name} for?</p>
         <p class="subline">Pick one.</p>`,
-        `What is a ${creature.name} for? Is it ${options[0].label}, or ${options[1].label}?`,
+        `What is a ${creature.name} for? Is it`,
         options,
         {
             phase: "test",
@@ -263,6 +281,7 @@ creatureOrder.forEach((creatureIdx, position) => {
             animal: creature.name,
             animal_id: creature.id,
             animal_position: position + 1,
+            ...orderData,
             left_feature_id: options[0].feature.id,
             left_kind: options[0].kind,
             right_feature_id: options[1].feature.id,

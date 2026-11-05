@@ -1,19 +1,20 @@
 // Kids Teleology Study (jsPsych v8)
 // URL options
 //     ?pid = 7         participant number. 
-//     ?audio = 1       read screens aloud with the browswer's speech synthesis
+// Narration is disabled in this draft; screens advance with their buttons.
 // 
 // Structure: welcome -> how to answer yes/no -> practice -. thank you + fireworks -. 
 //            for each animal (random order):
 //               introduction (picture + all 4 properties on one screen)
 //               "what is the animal for" transition -> 4 questions, one per screen
 //               neutral thank you before the next animal
-// Animal order, property learning order, and test order are random per child. 
+// Animal order and property introduction order are random per child.
+// Questions follow that animal's property introduction order.
 // Every child answers 20 questions, one per property 
 
 
 const params = new URLSearchParams(window.location.search);
-const AUDIO = params.get("audio") === "1";
+const AUDIO = false;
 
 function getParticipantNumber(){
     const fromUR1 = parseInt(params.get("pid"), 10);
@@ -236,8 +237,8 @@ animalOrder.forEach((animalIdx, pos) =>{
         "Next", Object.assign({screen: "questions_intro"}, baseData)
     ));
 
-    // one q per screen, random order
-    jsPsych.randomization.shuffle(animal.properties).forEach((p,k)=> {
+    // One question per screen, in the same order as this animal's introduction.
+    introProps.forEach((p,k)=> {
         const spoken = `Is a ${animal.name} for ${p.text}?`;
         timeline.push(yesNoTrial(
             `<img class="mini-animal" src="${animal.image}" alt="">
@@ -249,6 +250,7 @@ animalOrder.forEach((animalIdx, pos) =>{
                 session_id: SESSION_ID,
                 animal: animal.name, 
                 animal_position: pos + 1, 
+                intro_order: introProps.map(item => item.id).join("|"),
                 test_position_within_animal: k + 1, 
                 property_id: p.id, 
                 property_text: p.text, 

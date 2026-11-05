@@ -47,12 +47,19 @@ html, body { background: var(--sky); color: var(--ink); font-family: "Fredoka", 
     min-width: 260px; max-width: 400px; padding: 22px 28px; margin: 14px 18px; }
 .btn-pick:hover { background: #eaf4fc; }
 .btn-pick.demo { display: inline-block; pointer-events: none; cursor: default; }
-#jspsych-html-button-response-btngroup { display: flex; flex-wrap: wrap; justify-content: center; align-items: stretch; }
+#jspsych-html-button-response-btngroup { display: flex; flex-wrap: nowrap; justify-content: center; align-items: stretch; gap: 28px; padding: 14px 18px; }
+#jspsych-html-button-response-btngroup > * { flex: 1 1 0; min-width: 0; max-width: 400px; }
+#jspsych-html-button-response-btngroup .btn-pick { min-width: 0; max-width: none; width: 100%; margin: 0; overflow-wrap: anywhere; }
+.btn-pick.is-speaking { background: #fff3cc; outline: 5px solid var(--ink); outline-offset: 3px; animation: option-wiggle 600ms ease-in-out; }
+@keyframes option-wiggle { 0%, 100% { transform: translateY(0) rotate(0); } 25% { transform: translateY(-6px) rotate(-2deg); } 75% { transform: translateY(-6px) rotate(2deg); } }
+.btn-replay { display: block; margin: 12px auto; padding: 12px 20px; background: #fff; color: var(--ink); border: 3px solid var(--blue); font-size: 22px; }
 
 @media (max-width: 600px) {
     .headline { font-size: 30px; } .subline { font-size: 26px; } .heading-title { font-size: 36px; }
     .btn-go { min-width: 140px; font-size: 28px; }
     .btn-pick { font-size: 26px; min-width: 100%; max-width: 100%; margin: 8px 0; }
+    #jspsych-html-button-response-btngroup { gap: 12px; padding: 12px 0; }
+    #jspsych-html-button-response-btngroup .btn-pick { min-width: 0; max-width: none; margin: 0; padding: 18px 10px; font-size: clamp(18px, 4.8vw, 26px); }
     .parade-pic { width: 90px; }
 }
-@media (prefers-reduced-motion: reduce) { .parade-pic { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .parade-pic, .btn-pick.is-speaking { animation: none; } }
