@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Toma Study</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jspsych@7.3.4/css/jspsych.css">
+<script src="https://cdn.jsdelivr.net/npm/jspsych@7.3.4/dist/index.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@jspsych/plugin-html-button-response@1.2.0/dist/index.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@jspsych/plugin-survey-text@1.1.3/dist/index.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+:root{--bg:#d6d4ce;--bg2:#ecebe6;--ink:#26272a;--edge:#4a5560}
+@media (prefers-color-scheme:dark){:root{--bg:#202225;--bg2:#33363a;--ink:#ecebe8;--edge:#8e9aa6}}
+body{background:radial-gradient(ellipse at 50% 40%,var(--bg2),var(--bg));color:var(--ink);font-family:system-ui,"Segoe UI",Helvetica,Arial,sans-serif}
+body.play{overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+#cv{position:fixed;inset:0}#cv canvas{display:block;touch-action:none}
+#cap{position:fixed;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 12px);text-align:center;font-size:clamp(20px,4.5vw,30px);font-weight:600;padding:0 16px;z-index:5;pointer-events:none}
+#nx{position:fixed;right:10px;bottom:10px;z-index:6;opacity:.35;font:14px system-ui;padding:6px 12px;border:0;border-radius:8px;background:var(--edge);color:#fff}
+.jspsych-btn{font-size:22px;padding:12px 36px;border-radius:12px;border:0;background:var(--edge);color:#fff;cursor:pointer}
+.jspsych-content{color:var(--ink)}
+.exp{font-size:14px;opacity:.7}
+#sa{position:relative;width:92vw;height:58vh;margin:0 auto;border:2px dashed var(--edge);border-radius:12px}
+.it{position:absolute;width:88px;height:88px;display:flex;align-items:center;justify-content:center;font-size:56px;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.it img{width:84px;pointer-events:none}
+</style>
+</head>
+<body>
+<script>
+/* ================= CONFIG ================= */
+const CFG={
+  conditions:[1,2,3,4],   // 1 purpose+demo | 2 demo only | 3 free exploration | 4 purpose, no demo (remove 4 to drop it)
+  idleSeconds:15, maxSeconds:300,          // exploration phase ends after 15 s idle or 5 min
+  recallIdle:20, recallMax:120,            // "show me everything it can do"
+  transferMax:60,                          // alternative-scenario problem
+  effectMs:2000, holdMs:500, speak:true,
+  objectName:"toma",
+  purpose:"People use a toma to send secret messages to their friends.",
+  saveJSON:true                            // download full data file at end (replace with your own server save if needed)
+};
+/* Functions: 0 red button tap | 1 blue cube tap | 2 green pyramid hold | 3 slider drag | 4 yellow dial twist | 5 purple ball double-tap | 6 orange lever pull */
+const FN=["sound","morph","light","color","fins","hop","launch"];
+/* Alternative scenarios (Q4): each can be solved by exactly one function and none mention it, none mention secret messages */
+const SCEN=[
+  "Pretend your friend is outside and can't see you. Can the toma help you get their attention?",
+  "Pretend you need something that can roll. Can the toma help?",
+  "Pretend it is nighttime and it's really dark. Can the toma help you see?",
+  "Pretend you want the toma to look like a different color. Can you do it?",
+  "Pretend you need to swim across a pond. Can the toma help you?",
+  "Pretend there is a puddle and the toma needs to jump over it. Can you help?",
+  "Pretend you want to send a ball over a wall to a friend. Can the toma help?"
+];
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+function say(t){const c=document.getElementById("cap");if(c)c.textContent=t;
+  if(CFG.speak&&window.speechSynthesis){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.rate=.9;speechSynthesis.speak(u)}catch(e){}}}
+
+/* ================= 3D ENGINE (from draft 1) ================= */
+const Toma=(()=>{
+  const R=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});R.setPixelRatio(Math.min(devicePixelRatio,2));R.shadowMap.enabled=true;
+  const S=new THREE.Scene(),cam=new THREE.PerspectiveCamera(35,1,.1,100);
+  S.add(new THREE.HemisphereLight(0xffffff,0x8a8a8a,.85));
+  const sun=new THREE.DirectionalLight(0xffffff,.9);sun.position.set(4,8,6);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);
+  Object.assign(sun.shadow.camera,{left:-8,right:8,top:8,bottom:-8});S.add(sun);
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(60,60),new THREE.ShadowMaterial({opacity:.3}));ground.rotation.x=-Math.PI/2;ground.position.y=-.75;ground.receiveShadow=true;S.add(ground);
+  const G=new THREE.Group();S.add(G);
+  const lamp=new THREE.PointLight(0xffd966,0,9);G.add(lamp);
+  const M=(c,r,m)=>new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m||0});
+  const pvc=M(0xe8e6de,.55),metal=M(0x9aa0a3,.4,.6),dark=M(0x303338,.5,.3),hubM=M(0xffffff,.5);
+  const setHue=v=>hubM.color.setHSL(v,.38,.46);setHue(262/360);
+  function mk(g,m,p,x=0,y=0,z=0){const o=new THREE.Mesh(g,m);o.position.set(x,y,z);o.castShadow=o.receiveShadow=true;p.add(o);return o}
+  const cylX=(r,l)=>new THREE.CylinderGeometry(r,r,l,32).rotateZ(Math.PI/2);
+  const tag=(o,k,fn)=>{o.userData={kind:k,fn};return o};
+  const hubBox=mk(new THREE.BoxGeometry(1.4,1.4,1.4),hubM,G),hubBall=mk(new THREE.SphereGeometry(.95,40,28),hubM,G);hubBall.visible=false;
+  [.5,-.5].forEach(y=>mk(new THREE.BoxGeometry(1.46,.06,1.46),dark,G,0,y,0));
+  const ARM=[0,Math.PI,-Math.PI/2,Math.PI/2].map((a,i)=>{
+    const g=new THREE.Group();g.rotation.y=a;G.add(g);
+    const sleeve=mk(cylX(.34,1),metal,g,1.25,0,0);sleeve.scale.x=1.1;
+    mk(cylX(.355,.14),M(0x2a8f8f,.6),g,1.0,0,0);mk(cylX(.36,.1),dark,g,1.82,0,0);
+    const inner=mk(cylX(.25,1),pvc,g);inner.userData={kind:"pipe",arm:i};
+    const tip=new THREE.Group();g.add(tip);
+    const o={g,inner,tip,e:0};o.upd=()=>{const T=2.5+o.e;inner.scale.x=T-.9;inner.position.x=(.9+T)/2;tip.position.x=T};return o});
+  const pyr=tag(mk(new THREE.ConeGeometry(.45,.85,4).rotateZ(-Math.PI/2),M(0x2f7a4a,.45),ARM[0].tip,.4),"hold",2);
+  const cube=tag(mk(new THREE.BoxGeometry(.65,.65,.65),M(0x2c5aa0,.4),ARM[1].tip,.32),"tap",1);
+  mk(cylX(.43,.2),dark,ARM[2].tip,.1);
+  const dome=tag(mk(new THREE.SphereGeometry(.33,28,20),M(0xb3262b,.3),ARM[2].tip,.28),"tap",0);
+  const track=tag(mk(new THREE.BoxGeometry(.18,.16,2.5),dark,ARM[3].tip,.2),"slider",3);
+  const knob=tag(mk(new THREE.SphereGeometry(.27,24,18),M(0xd0d3d5,.3,.8),ARM[3].tip,.3),"slider",3);
+  for(let k=-4;k<=4;k++)mk(new THREE.BoxGeometry(.05,.06,.03),pvc,ARM[3].tip,.02,.1,k*.28);
+  const dial=new THREE.Group();dial.position.set(0,.78,-.3);G.add(dial);
+  const dd=tag(mk(new THREE.CylinderGeometry(.34,.34,.16,32),M(0xd9a81f,.35,.5),dial),"dial",4);
+  tag(mk(new THREE.BoxGeometry(.1,.06,.3),dark,dial,0,.1,-.14),"dial",4);
+  mk(new THREE.CylinderGeometry(.07,.07,.6,16),metal,G,-.45,1.0,.35);
+  const ball=tag(mk(new THREE.SphereGeometry(.3,28,20),M(0x7a4fb0,.35),G,-.45,1.45,.35),"dbl",5);
+  const lev=new THREE.Group();lev.position.set(.45,.72,.35);G.add(lev);
+  mk(new THREE.CylinderGeometry(.14,.14,.12,20),dark,G,.45,.7,.35);
+  tag(mk(new THREE.CylinderGeometry(.05,.05,.95,12),metal,lev,0,.48,0),"lever",6);
+  const lk=tag(mk(new THREE.SphereGeometry(.15,20,14),M(0xe0742a,.4),lev,0,.98,0),"lever",6);
+  const fins=new THREE.Group();G.add(fins);fins.visible=false;
+  [45,135,225,315].forEach(d=>{const a=d*Math.PI/180;const f=mk(new THREE.BoxGeometry(1.1,1.2,.07),M(0x2a8f8f,.45,.4),fins,Math.cos(a)*1.25,.1,-Math.sin(a)*1.25);f.rotation.y=a});
+  const shot=mk(new THREE.SphereGeometry(.2,20,14),new THREE.MeshStandardMaterial({color:0xff9a3c,emissive:0xff7a1c,emissiveIntensity:.8}),S);shot.visible=false;shot.castShadow=false;
+  ARM.forEach(a=>a.upd());
+  const TARGET=[dome,cube,pyr,knob,dd,ball,lk];
+
+  const AN={},now=()=>performance.now(),on=i=>AN[i]&&now()-AN[i]<CFG.effectMs,pr=i=>(now()-AN[i])/CFG.effectMs;
+  let D=null,lastDbl=0,lastAct=now(),enabled=false,hueTimer,shotStart=new THREE.Vector3(),ac=null;
+  const H={log(){},fn(){}};
+  function effect(i){
+    if(i===0){try{if(!ac)ac=new(window.AudioContext||window.webkitAudioContext)();ac.resume&&ac.resume();const o=ac.createOscillator(),g=ac.createGain(),n=ac.currentTime,d=CFG.effectMs/1000;
+      o.type="triangle";o.connect(g);g.connect(ac.destination);o.frequency.setValueAtTime(440,n);o.frequency.linearRampToValueAtTime(660,n+d/2);o.frequency.linearRampToValueAtTime(440,n+d);
+      g.gain.setValueAtTime(.25,n);g.gain.linearRampToValueAtTime(0,n+d);o.start();o.stop(n+d)}catch(e){}}
+    if(i===6)shotStart=G.localToWorld(new THREE.Vector3(.45,1.7,.35));
+    AN[i]=now();
+  }
+  function trigger(i,src){H.fn(i,src);effect(i)}
+  function colorTo(v){setHue(v);clearTimeout(hueTimer);hueTimer=setTimeout(()=>{setHue(262/360);knob.position.z=0},CFG.effectMs)}
+  function update(){
+    hubBox.visible=!on(1);hubBall.visible=!!on(1);
+    lamp.intensity=on(2)?4:0;hubM.emissive.setHex(on(2)?0xffcc55:0);hubM.emissiveIntensity=on(2)?.8:0;
+    const s=on(4)?Math.sin(Math.PI*pr(4)):0;fins.visible=s>.01;fins.scale.setScalar(Math.max(s,.001));
+    G.position.y=on(5)?Math.abs(Math.sin(pr(5)*Math.PI*3))*.7:0;
+    shot.visible=!!on(6);if(on(6)){const t=pr(6)*2;shot.position.set(shotStart.x+.4*t,shotStart.y+2*t-1.5*t*t,shotStart.z+2.2*t)}
+    if(!(D&&D.k==="lever"))lev.rotation.x*=.8;
+  }
+  (function frame(){requestAnimationFrame(frame);update();R.render(S,cam)})();
+
+  const ray=new THREE.Raycaster(),V=new THREE.Vector2(),vis=o=>{for(;o;o=o.parent)if(!o.visible)return false;return true};
+  function pick(e){V.set(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);ray.setFromCamera(V,cam);
+    const x=ray.intersectObjects(G.children,true).find(h=>vis(h.object));return x&&x.object.userData.kind?x.object.userData:{}}
+  const cv=R.domElement,clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  cv.addEventListener("pointerdown",e=>{lastAct=now();if(!enabled)return;cv.setPointerCapture(e.pointerId);
+    const u=pick(e);D={k:u.kind||"rot",u,x:e.clientX,y:e.clientY,fired:0,ang:0,t0:now()};
+    H.log("touch",{on:D.k,fn:u.fn===undefined?null:FN[u.fn],arm:u.arm===undefined?null:u.arm,x:Math.round(e.clientX),y:Math.round(e.clientY)});
+    if(D.k==="tap")trigger(u.fn,"user");
+    if(D.k==="dbl"){if(now()-lastDbl<400){trigger(5,"user");lastDbl=0}else lastDbl=now()}
+    if(D.k==="hold")D.ht=setTimeout(()=>trigger(2,"user"),CFG.holdMs);
+    if(D.k==="pipe"){D.e0=ARM[u.arm].e;D.sx=e.clientX;D.sy=e.clientY}});
+  cv.addEventListener("pointermove",e=>{if(!D)return;lastAct=now();const dx=e.clientX-D.x,dy=e.clientY-D.y;
+    if(D.k==="rot"){G.rotation.y+=dx*.008;G.rotation.x=clamp(G.rotation.x+dy*.004,-.35,.5);D.moved=1}
+    if(D.k==="pipe"){const a=ARM[D.u.arm],dir=new THREE.Vector3(Math.cos(a.g.rotation.y),0,-Math.sin(a.g.rotation.y)).applyQuaternion(G.quaternion);
+      const p0=G.position.clone().project(cam),p1=G.position.clone().add(dir).project(cam),sx=(p1.x-p0.x)*innerWidth/2,sy=-(p1.y-p0.y)*innerHeight/2,len=Math.hypot(sx,sy)||1;
+      a.e=clamp(D.e0+((e.clientX-D.sx)*sx+(e.clientY-D.sy)*sy)/len/len,0,1.4);a.upd()}
+    if(D.k==="slider"){const sv=clamp(knob.position.z+dx/110,-1,1);knob.position.z=sv;if(!D.fired){trigger(3,"user");D.fired=1}colorTo(((262/360+sv*.45)%1+1)%1)}
+    if(D.k==="dial"){dial.rotation.y+=dx*.03;D.ang+=Math.abs(dx*.03);if(D.ang>1.5&&!D.fired){trigger(4,"user");D.fired=1}}
+    if(D.k==="lever"){lev.rotation.x=clamp(lev.rotation.x+dy*.01,0,1.1);if(lev.rotation.x>.7&&!D.fired){trigger(6,"user");D.fired=1}}
+    D.x=e.clientX;D.y=e.clientY});
+  ["pointerup","pointercancel"].forEach(ev=>cv.addEventListener(ev,()=>{if(!D)return;clearTimeout(D.ht);
+    if(D.k==="pipe")H.log("extend",{arm:D.u.arm,ext:+ARM[D.u.arm].e.toFixed(2),delta:+(ARM[D.u.arm].e-D.e0).toFixed(2)});
+    if(D.k==="rot"&&D.moved)H.log("rotate",{});
+    if(D.k==="hold")H.log("release",{heldMs:Math.round(now()-D.t0)});
+    D=null}));
+  function size(){const w=innerWidth,hh=innerHeight;R.setSize(w,hh);cam.aspect=w/hh;cam.position.set(0,3.4,w/hh<1?14:9.6);cam.lookAt(0,.2,0);cam.updateProjectionMatrix()}
+  addEventListener("resize",size);size();
+
+  return{
+    hooks:h=>Object.assign(H,{log(){},fn(){}},h),
+    mount(el){el.appendChild(cv);size()},unmount(){cv.remove()},
+    enable(b){enabled=b;if(!b)D=null;lastAct=now()},
+    touching:()=>!!D, idleMs:()=>now()-lastAct, markActive(){lastAct=now()},
+    reset(){D=null;for(const k in AN)delete AN[k];G.rotation.set(0,0,0);G.position.y=0;ARM.forEach(a=>{a.e=0;a.upd()});knob.position.z=0;lev.rotation.x=0;dial.rotation.y=0;setHue(262/360);clearTimeout(hueTimer);update()},
+    async demo(i){const o=TARGET[i];
+      const pulse=setInterval(()=>o.scale.setScalar(o.scale.x>1?1:1.3),300);await wait(1200);clearInterval(pulse);o.scale.setScalar(1);
+      if(i===3){const t=now();const iv=setInterval(()=>{const p=(now()-t)/CFG.effectMs;knob.position.z=Math.sin(p*Math.PI*2);colorTo((262/360+p*.8)%1)},30);await wait(CFG.effectMs);clearInterval(iv)}
+      else{effect(i);await wait(CFG.effectMs)}},
+    snapshot(){this.reset();R.setSize(320,320,false);cam.aspect=1;cam.position.set(0,3.4,14);cam.lookAt(0,.2,0);cam.updateProjectionMatrix();
+      R.render(S,cam);const u=cv.toDataURL("image/png");size();return u}
+  };
+})();
+const TOMA_IMG=Toma.snapshot();
+
+/* ================= jsPsych plugin: interactive toma trial ================= */
+const PT=jsPsychModule.ParameterType;
+class TomaPlugin{
+  constructor(js){this.jsPsych=js}
+  trial(el,t){
+    const js=this.jsPsych,ev=[],T0=performance.now(),rt=()=>Math.round(performance.now()-T0);
+    let phase="intro",ps=null,ended=false,success=null;
+    const first={},trig={},att={},found=new Set();
+    el.innerHTML='<div id="cap"></div><div id="cv"></div><button id="nx">Next</button>';
+    document.body.classList.add("play");
+    Toma.mount(el.querySelector("#cv"));Toma.reset();
+    el.querySelector("#nx").onclick=()=>{ended="experimenter"};
+    const playPhase=t.mode==="explore"?"play":t.mode;
+    Toma.hooks({
+      log:(type,x)=>{const r={t:rt(),phase,type,...x};ev.push(r);if(type==="touch"&&x.fn)att[x.fn]=(att[x.fn]||0)+1},
+      fn:(i,src)=>{const f=!found.has(i);found.add(i);trig[i]=(trig[i]||0)+1;if(f)first[i]=rt()-ps;
+        ev.push({t:rt(),phase,type:"function",fn:FN[i],first:f,src,count:trig[i]});
+        if(t.mode==="transfer"&&i===t.target_fn&&success===null)success=rt()-ps}
+    });
+    (async()=>{
+      if(t.mode==="explore"){
+        say(t.intro_text);await wait(t.intro_ms);
+        if(t.do_demo){phase="demo";say("Watch!");await wait(1500);await Toma.demo(t.demo_fn);
+          ev.push({t:rt(),phase,type:"demo",fn:FN[t.demo_fn]});say("See?");await wait(1500)}
+        say("Now it's your turn. Play with it!");
+      }else say(t.prompt_text);
+      phase=playPhase;ev.push({t:rt(),phase,type:"play_start"});ps=rt();
+      Toma.enable(true);const maxMs=t.max_seconds*1000;let reason;
+      while(true){
+        await wait(150);const el_=rt()-ps;
+        if(ended){reason=ended;break}
+        if(t.mode==="transfer"&&success!==null){await wait(CFG.effectMs);reason="success";break}
+        if(el_>maxMs){reason="max_time";break}
+        if(t.mode!=="transfer"&&!Toma.touching()&&Toma.idleMs()>t.idle_seconds*1000){reason="idle";break}
+      }
+      Toma.enable(false);Toma.hooks({});phase="end";
+      const playMs=rt()-ps,fnEv=ev.filter(e=>e.type==="function"),ts=ev.filter(e=>e.type==="touch");
+      const data={task:t.mode,play_ms:playMs,end_reason:reason,events:ev,found:[...found].map(i=>FN[i]),
+        n_function_triggers:fnEv.length,n_distinct_functions:found.size,
+        n_distinct_excluding_demo:[...found].filter(i=>i!==t.demo_fn).length,
+        time_to_first_function_ms:fnEv.length?first[[...found][0]]:null,
+        n_touches:ts.length,n_touches_on_controls:ts.filter(e=>e.fn).length,n_touches_on_body_or_empty:ts.filter(e=>!e.fn&&e.on!=="pipe").length,
+        n_arm_extends:ev.filter(e=>e.type==="extend").length,n_rotations:ev.filter(e=>e.type==="rotate").length,
+        per_function:FN.map((n,i)=>({fn:n,attempts:att[n]||0,triggers:trig[i]||0,first_trigger_ms:first[i]===undefined?null:first[i],was_demo:i===t.demo_fn}))};
+      if(t.mode==="transfer"){const fb=t.found_before||[];Object.assign(data,{target_fn:FN[t.target_fn],success:success!==null,latency_ms:success,
+        target_found_before:fb.includes(FN[t.target_fn]),other_functions_tried_first:fnEv.filter(e=>e.first&&e.fn!==FN[t.target_fn]&&(success===null||e.t-ps<=success)).map(e=>e.fn)})}
+      speechSynthesis&&speechSynthesis.cancel();document.body.classList.remove("play");Toma.unmount();el.innerHTML="";
+      js.finishTrial(data);
+    })();
+  }
+}
+TomaPlugin.info={name:"toma",parameters:{
+  mode:{type:PT.STRING,default:"explore"},do_demo:{type:PT.BOOL,default:false},demo_fn:{type:PT.INT,default:null},
+  intro_text:{type:PT.STRING,default:""},intro_ms:{type:PT.INT,default:3000},prompt_text:{type:PT.STRING,default:""},
+  idle_seconds:{type:PT.INT,default:15},max_seconds:{type:PT.INT,default:300},target_fn:{type:PT.INT,default:null},
+  found_before:{type:PT.STRING,default:[],array:true}}};
+
+/* ================= assignment (random; override with ?cond=2&demo=3&target=5) ================= */
+const jsPsych=initJsPsych({on_finish:()=>{
+  if(CFG.saveJSON)jsPsych.data.get().localSave("json","toma_"+(window.PID||"p")+".json");
+  document.body.innerHTML='<h1 style="text-align:center;margin-top:30vh">All done! Great playing!</h1>'}});
+const urlv=k=>{const v=jsPsych.data.getURLVariable(k);return v===undefined||v===""?null:+v};
+const COND=urlv("cond")||jsPsych.randomization.sampleWithoutReplacement(CFG.conditions,1)[0];
+const hasDemo=COND===1||COND===2,hasPurpose=COND===1||COND===4;
+const DEMO_FN=hasDemo?(urlv("demo")!==null?urlv("demo"):jsPsych.randomization.sampleWithoutReplacement([0,1,2,3,4,5,6],1)[0]):null;
+const TARGET_FN=urlv("target")!==null?urlv("target"):jsPsych.randomization.sampleWithoutReplacement([0,1,2,3,4,5,6].filter(i=>i!==DEMO_FN),1)[0];
+jsPsych.data.addProperties({condition:COND,has_demo:hasDemo,has_purpose:hasPurpose,demo_fn:DEMO_FN===null?null:FN[DEMO_FN],transfer_target_fn:FN[TARGET_FN]});
+
+/* ================= timeline ================= */
+const exploreFound=()=>jsPsych.data.get().filter({task:"explore"}).values()[0].found;
+const qTrial=(task,q)=>({type:jsPsychSurveyText,button_label:"Next",data:{task},
+  preamble:`<img src="${TOMA_IMG}" width="150"><h2>${q}</h2><p class="exp">Experimenter: ask the child, then type the answer as close to verbatim as possible.</p>`,
+  questions:[{prompt:"Child's response",name:"response",rows:4},{prompt:"Notes (optional)",name:"notes",rows:2}],
+  on_load:()=>say(q)});
+const TOYS=[["ball","⚽"],["teddy","🧸"],["car","🚗"],["drum","🥁"],["flashlight","🔦"],["rocket","🚀"],["frog","🐸"],["puzzle","🧩"],["toma",null]];
+let SORT={};
+
+const timeline=[
+ {type:jsPsychSurveyText,data:{task:"info"},preamble:"<h2>Experimenter setup</h2>",button_label:"Continue",
+  questions:[{prompt:"Participant ID",name:"participant_id",required:true},{prompt:"Age (years;months)",name:"age"},{prompt:"Experimenter",name:"experimenter"}],
+  on_finish:d=>{window.PID=d.response.participant_id;jsPsych.data.addProperties({participant_id:d.response.participant_id,age:d.response.age})}},
+ {type:jsPsychHtmlButtonResponse,stimulus:"<h1>Ready to play?</h1>",choices:["Start"],data:{task:"ready"}},
+ {type:TomaPlugin,mode:"explore",data:{task:"explore"},do_demo:hasDemo,demo_fn:DEMO_FN,
+  intro_text:hasPurpose?`This is a ${CFG.objectName}. ${CFG.purpose}`:`This is a ${CFG.objectName}.`,intro_ms:hasPurpose?6500:3000,
+  idle_seconds:CFG.idleSeconds,max_seconds:CFG.maxSeconds},
+ qTrial("q1_what_for","What is this for?"),
+ qTrial("q2_anything_else","Is it for anything else?"),
+ {type:TomaPlugin,mode:"recall",data:{task:"recall"},demo_fn:DEMO_FN,prompt_text:"Can you show me everything it can do?",idle_seconds:CFG.recallIdle,max_seconds:CFG.recallMax},
+ {type:jsPsychHtmlButtonResponse,stimulus:"<h2>Next: a pretend problem</h2>",choices:["Go"],data:{task:"ready2"}},
+ {type:TomaPlugin,mode:"transfer",data:{task:"transfer"},demo_fn:DEMO_FN,target_fn:TARGET_FN,found_before:exploreFound,
+  prompt_text:SCEN[TARGET_FN],max_seconds:CFG.transferMax},
+ {type:jsPsychHtmlButtonResponse,choices:["All done"],data:{task:"sort"},
+  stimulus:()=>{const slots=jsPsych.randomization.shuffle([...Array(9).keys()]);
+    return `<h2>Put the toys that go together close to each other.</h2><div id="sa">${TOYS.map(([id,em],k)=>{const s=slots[k];
+    return `<div class="it" data-id="${id}" style="left:${6+(s%3)*32}%;top:${6+Math.floor(s/3)*30}%">${em||`<img src="${TOMA_IMG}">`}</div>`}).join("")}</div>
+    <p class="exp">Experimenter: ask "Why did you put these together?" and type the reason.</p><textarea id="sn" rows="2" style="width:80%"></textarea>`},
+  on_load:()=>{const A=document.getElementById("sa"),r=A.getBoundingClientRect();SORT={drops:[],pos:{},note:"",t0:performance.now()};
+    A.querySelectorAll(".it").forEach(n=>{const upd=()=>{const b=n.getBoundingClientRect();SORT.pos[n.dataset.id]={x:+((b.left+b.width/2-r.left)/r.width).toFixed(3),y:+((b.top+b.height/2-r.top)/r.height).toFixed(3)}};upd();
+      let off=null;
+      n.onpointerdown=e=>{n.setPointerCapture(e.pointerId);const b=n.getBoundingClientRect();off=[e.clientX-b.left,e.clientY-b.top];n.style.zIndex=5};
+      n.onpointermove=e=>{if(!off)return;n.style.left=Math.max(0,Math.min(r.width-n.offsetWidth,e.clientX-r.left-off[0]))+"px";n.style.top=Math.max(0,Math.min(r.height-n.offsetHeight,e.clientY-r.top-off[1]))+"px"};
+      n.onpointerup=()=>{if(!off)return;off=null;upd();SORT.drops.push({id:n.dataset.id,t:Math.round(performance.now()-SORT.t0),...SORT.pos[n.dataset.id]})}});
+    document.getElementById("sn").oninput=e=>SORT.note=e.target.value},
+  on_finish:d=>{d.positions=SORT.pos;d.drops=SORT.drops;d.sort_note=SORT.note}}
+];
+jsPsych.run(timeline);
+</script>
+</body>
+</html>
