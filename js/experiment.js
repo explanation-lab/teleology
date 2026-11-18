@@ -1,5 +1,5 @@
 // Teleology & Placeholders — 40-item adult norming pilot.
-const EXPERIMENT_VERSION = "adult-norming-pilot-40-v1";
+const EXPERIMENT_VERSION = "adult-norming-pilot-40-v2";
 const CONDITION_ASSIGNMENT = "within_participant";
 const CONDITION_CELLS = { behavioral: {}, ecological: {}, self_benefiting: {}, human_benefiting: {} };
 
@@ -35,7 +35,7 @@ function startTeleologyStudy(explanationLab = null) {
       const responseData = jsPsych.data.get();
       const saveOptions = {
         durationMs: performance.now() - studyStartedAt,
-        metadata: { experimentVersion: EXPERIMENT_VERSION, schemaVersion: "2.0.0", demographicFields: [] },
+        metadata: { experimentVersion: EXPERIMENT_VERSION, schemaVersion: "2.0.0", demographicFields: DEMOGRAPHIC_FIELDS },
         showRetryScreen: false
       };
       async function saveResponses() {
@@ -62,7 +62,7 @@ function startTeleologyStudy(explanationLab = null) {
     ...(explanationLab ? { condition: explanationLab.launch.condition } : { participant_id: participantId }),
     study_version: EXPERIMENT_VERSION,
     button_layout: BUTTON_LAYOUT,
-    consent_version: "teleology-adult-pilot-v1"
+    consent_version: "teleology-adult-pilot-v2"
   });
 
   const LABELS = Object.keys(CATEGORY_LABELS);
@@ -149,6 +149,16 @@ function startTeleologyStudy(explanationLab = null) {
       }
     });
 
+  });
+
+  timeline.push({
+    type: jsPsychSurveyHtmlForm,
+    html: TELEOLOGY_DEMOGRAPHICS,
+    button_label: "Finish",
+    css_classes: ["demographics-screen"],
+    data: { task: "demographics", trial_role: "demographic" },
+    on_start: () => { document.getElementById("study-progress").hidden = true; },
+    on_load: () => { document.getElementById("demographics-heading")?.focus(); }
   });
 
   const COLUMNS_TO_DROP = ["response", "stimulus", "trial_type", "trial_index", "plugin_version",

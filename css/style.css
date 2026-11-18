@@ -31,6 +31,20 @@ body { background:#fff; color:#222; font-family:-apple-system,"Segoe UI",Helveti
 .progress-percent { font-variant-numeric:tabular-nums; }
 .progress-track { height:7px; overflow:hidden; background:#ededf0; border-radius:99px; }
 .progress-fill { height:100%; width:0; border-radius:99px; background:#3a3a43; transition:width .22s ease; }
+.demographics-screen { padding:32px 0; }
+.demographics { margin:0 auto; max-width:700px; text-align:left; }
+.demographics h1 { margin:0 0 10px; font-size:clamp(26px,5vw,34px); line-height:1.2; }
+.demographics p { margin:0 0 24px; color:#454b54; }
+.demographics-fields { display:grid; gap:20px; padding:18px 20px; border:1px solid #dfe2e7; border-radius:14px; }
+.demographics-age { display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px; }
+.demographics-age label,.demographics legend { font-weight:650; }
+.demographics-age input { box-sizing:border-box; width:90px; padding:7px 10px; font:inherit; border:1px solid #888; border-radius:6px; }
+.demographics fieldset { min-width:0; margin:0; padding:8px 0 0; border:0; }
+.demographics legend { padding:0; }
+.demographic-options { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:5px 18px; }
+.demographic-options label { display:flex; align-items:flex-start; gap:7px; min-height:30px; cursor:pointer; }
+.demographic-options input { flex:none; margin:5px 0 0; accent-color:#38383e; }
+.demographics-screen #jspsych-survey-html-form-next { margin:22px auto 0; width:min(100%,260px); }
 @media (max-width:760px) { .layout-horizontal .jspsych-btn-group-grid { max-width:620px; grid-template-columns:repeat(2,minmax(0,1fr)) !important; } }
 @media (max-width:480px) {
   .jspsych-content { padding-top:84px; }
@@ -43,5 +57,7 @@ body { background:#fff; color:#222; font-family:-apple-system,"Segoe UI",Helveti
   .layout-horizontal .jspsych-btn-group-grid,.consent-screen .jspsych-btn-group-grid { grid-template-columns:1fr !important; }
   #consent-scroll { padding:24px 20px !important; max-height:calc(100svh - 270px) !important; }
   .study-progress { padding:16px 20px; }
+  .demographics-screen { padding-top:28px; }
+  .demographic-options { grid-template-columns:1fr; }
 }
 @media (prefers-reduced-motion:reduce) { .progress-fill,.jspsych-btn { transition:none; } }
