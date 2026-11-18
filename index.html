@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Animal Properties Study</title>
+  <link rel="stylesheet" href="js/lib/jspsych/jspsych.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script defer src="js/lib/jspsych/jspsych.js"></script>
+  <script defer src="js/lib/plugin-html-button-response/plugin-html-button-response.js"></script>
+  <script defer src="js/stimuli.js"></script>
+  <script defer src="js/consent.js"></script>
+  <script defer src="js/experiment.js"></script>
+  <script defer src="js/launch.js"></script>
+</head>
+<body>
+  <div id="study-progress" class="study-progress" hidden>
+    <div class="progress-inner">
+      <div class="progress-caption"><span>Study progress</span><span class="progress-percent" aria-hidden="true">0%</span></div>
+      <div class="progress-track" role="progressbar" aria-label="Study progress" aria-valuemin="0" aria-valuemax="40" aria-valuenow="0">
+        <div class="progress-fill"></div>
+      </div>
+    </div>
+  </div>
+  <main id="experiment"></main>
+</body>
+</html>
