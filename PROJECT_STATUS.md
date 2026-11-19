@@ -4,8 +4,8 @@
 
 Adult norming is complete with 100 participants. See the
 [analysis and figure](code/R/README.md) and
-[preregistration](pre-registrations/Norming%20Pre-registration.docx).
-[Child Experiment 1](code/experiments/Experiment%201/README.md) uses the top
+[preregistration](preregistrations/norming.docx).
+[Child Experiment 1](code/experiments/experiment1/README.md) uses the top
 five properties from each category, paired by rank across five fictional
 animals. A local browser run verified all 20 trials and the CSV export.
 

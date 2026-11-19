@@ -157,7 +157,7 @@ bind_rows(age.summary, category.summary) %>%
 
 ### Plot of the top five properties for each category
 
-```{r fig.height=6, fig.width=10, message=FALSE}
+```{r fig.height=6, fig.width=10, dev="svg", message=FALSE}
 # As in Teleology and Generics, rank phrases by how often each category was
 # selected. Rank all 40 phrases for each response, with alphabetical ties.
 df.exp1.counts = df.exp1.long %>%
@@ -195,7 +195,7 @@ plot.exp1.top = ggplot(data = df.plot,
                      labels = scales::label_percent(accuracy = 1)) +
   coord_flip(expand = FALSE) +
   facet_wrap(~type, ncol = 2, scales = "free") +
-  labs(title = "Top five phrases for each category",
+  labs(title = "Top features for each category",
        x = NULL, y = NULL) +
   scale_fill_brewer(palette = "Set1", drop = FALSE) +
   theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),

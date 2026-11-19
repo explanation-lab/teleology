@@ -6,7 +6,7 @@ Do children represent that an animal has **something it is for** even when they 
 
 Believing that a purpose exists need not be the same as knowing its content. The purpose-placeholder hypothesis distinguishes **purpose existence** (“this animal has something it is for”) from **purpose knowledge** (“I know what it is for”). The project asks whether children can hold the first representation without the second, and which descriptions they accept as possible elaborations of it. Keeping those questions separate helps us avoid treating an answer about what an animal does as evidence that the child attributes a purpose to it.
 
-The research pipeline is **candidate item generation → adult norming → child placeholder-elaboration study**. Adult norming is complete. The 20 selected properties are now in [Experiment 1](code/experiments/Experiment%201/README.md), the kids’ Animal Game.
+The research pipeline is **candidate item generation → adult norming → child placeholder-elaboration study**. Adult norming is complete. The 20 selected properties are now in [Experiment 1](code/experiments/experiment1/README.md), the kids’ Animal Game.
 
 ## Start here
 
@@ -31,11 +31,11 @@ The existing [Paper Readings](https://docs.google.com/document/d/13lWP7D-J-v3Hgd
 
 ## Adult norming
 
-In the [adult study](code/experiments/Norming/index.html), 100 participants each categorized 40 phrases. The [preregistration](pre-registrations/Norming%20Pre-registration.docx) describes the study design. The [analysis](code/R/README.md) ranks phrases by the number of votes they received in each category. The [selection figure](figures/Norming/exp1_top_stacked.pdf) shows the top five phrases for each category.
+In the [adult study](code/experiments/Norming/index.html), 100 participants each categorized 40 phrases. The [preregistration](preregistrations/norming.docx) describes the study design. The [analysis](code/R/README.md) ranks phrases by the number of votes they received in each category. The [selection figure](figures/Norming/exp1_top_stacked.pdf) shows the top five phrases for each category.
 
 ## Child Experiment 1
 
-The [Animal Game](code/experiments/Experiment%201/README.md) uses five fictional animals. Each animal has four properties, one from each category at the same rank. Each child sees every property and answers 20 yes/no questions.
+The [Animal Game](code/experiments/experiment1/README.md) uses five fictional animals. Each animal has four properties, one from each category at the same rank. Each child sees every property and answers 20 yes/no questions.
 
 ## Project resources
 
@@ -57,7 +57,7 @@ code/
 data/                  Local analysis inputs excluded from Git
 docs/                  Browser-renderable experiments or generated web output
 figures/               Plots and paper figures
-pre-registrations/     Study preregistration documents
+preregistrations/       Study preregistration documents
 ```
 
 `docs/` is not a general literature/meeting-notes directory. Add a different directory deliberately if the work later needs one, rather than forcing scientific prose into a generated-output folder.
