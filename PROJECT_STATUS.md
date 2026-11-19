@@ -1,6 +1,15 @@
 # Teleology & Placeholders — current status
 
-Last updated: **2026-09-13** (America/New_York).
+## November 19, 2026 checkpoint
+
+Adult norming is complete with 100 participants. See the
+[analysis and figure](code/R/README.md) and
+[preregistration](pre-registrations/Norming%20Pre-registration.docx).
+[Child Experiment 1](code/experiments/Experiment%201/README.md) uses the top
+five properties from each category, paired by rank across five fictional
+animals. A local browser run verified all 20 trials and the CSV export.
+
+## September 13, 2026 planning record
 
 - **Current stage:** candidate-item development / preparation for adult norming.
 - **Active experiment:** none launched. No experiment implementation is present in this repository.

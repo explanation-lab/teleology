@@ -1,0 +1,3 @@
+# Participant-level analysis files stay local, including de-identified copies.
+*
+!.gitignore

@@ -6,7 +6,7 @@ Do children represent that an animal has **something it is for** even when they 
 
 Believing that a purpose exists need not be the same as knowing its content. The purpose-placeholder hypothesis distinguishes **purpose existence** (“this animal has something it is for”) from **purpose knowledge** (“I know what it is for”). The project asks whether children can hold the first representation without the second, and which descriptions they accept as possible elaborations of it. Keeping those questions separate helps us avoid treating an answer about what an animal does as evidence that the child attributes a purpose to it.
 
-The research pipeline is **candidate item generation → adult norming → child placeholder-elaboration study**. The current phase is **candidate-item development / preparation for adult norming**. No Teleology experiment has been launched.
+The research pipeline is **candidate item generation → adult norming → child placeholder-elaboration study**. Adult norming is complete. The 20 selected properties are now in [Experiment 1](code/experiments/Experiment%201/README.md), the kids’ Animal Game.
 
 ## Start here
 
@@ -14,7 +14,7 @@ Read this README for the science, then [PROJECT_STATUS.md](PROJECT_STATUS.md) fo
 
 Use the existing Dashboard project home and guided project introduction alongside the lab’s general GitHub/GitHub Desktop and Slack onboarding. Opening a resource does not grant private access. Supply your actual GitHub username through onboarding, request the intended repository access, and then clone this repository through GitHub Desktop. Keep general onboarding and CITI review separate from project work and study authorization.
 
-## Current materials development
+## Candidate materials development
 
 Develop **25 unique, short, child-friendly candidate descriptions per working category**, paired with appropriate animals: about 100 descriptions overall, with additional alternatives welcome during development.
 
@@ -29,26 +29,22 @@ These are **working distinctions to test**, not validated psychological categori
 
 The existing [Paper Readings](https://docs.google.com/document/d/13lWP7D-J-v3HgdYzgC6muQlbEM8qEqdO5mBLml37n2o/edit?usp=drivesdk) document contains literature notes, exploratory designs, taxonomy discussion and an animal-description table. It is background/item-development material, not a final protocol, normed stimulus set, dataset or result of this project. Historical directions and stronger taxonomy claims there do not supersede the current working distinctions above. Do not duplicate that document or import its older proposed design details as settled decisions.
 
-## Planned adult norming
+## Adult norming
 
-Adult norming precedes selection of final material for the child study. The current proposal is for adults to see an animal-description pair and classify it into one of the four working categories, with a **none/unclear** option. Its purpose is to establish how descriptions are perceived empirically, rather than assuming the team’s labels are uniquely correct.
+In the [adult study](code/experiments/Norming/index.html), 100 participants each categorized 40 phrases. The [preregistration](pre-registrations/Norming%20Pre-registration.docx) describes the study design. The [analysis](code/R/README.md) ranks phrases by the number of votes they received in each category. The [selection figure](figures/Norming/exp1_top_stacked.pdf) shows the top five phrases for each category.
 
-An additional judgment about how natural a description sounds as something the animal could be “for” has been discussed; it is an **open proposed measure**, not a confirmed feature. Sample size, recruitment, exclusions, retention thresholds, consensus criteria, wording, trial structure, analysis and preregistration have not been established. No adult-norming experiment is implemented or launched in this repository.
+## Child Experiment 1
 
-## Planned later child study
-
-The later study would use adult-normed descriptions to examine how children elaborate a purpose placeholder. It should distinguish whether children think an animal has something it is for from whether they know what that purpose is, then investigate the content they accept as possible fillings of the placeholder.
-
-This is a planned research direction. Ages, sample size, conditions, trial count, stopping rules, exclusions, analyses and preregistration are not yet specified. Older exploratory screen sequences and character suggestions in background material are not a finalized child protocol.
+The [Animal Game](code/experiments/Experiment%201/README.md) uses five fictional animals. Each animal has four properties, one from each category at the same rank. Each child sees every property and answers 20 yes/no questions.
 
 ## Project resources
 
 - [Research Dashboard](https://explanation-lab-dashboard.web.app/#project/TELEOLOGY/overview) — concise current state, people, tasks, shared updates, confirmed decisions and open questions.
-- [Private Teleology repository](https://github.com/explanation-lab/teleology) — version-controlled scientific materials and reproducibility documentation.
+- [Teleology repository](https://github.com/explanation-lab/teleology) — version-controlled scientific materials and reproducibility documentation.
 - [#proj-teleology](https://explanationlab.slack.com/archives/C0C19J4RA81) — team conversation; important durable state also belongs in the Dashboard or repository.
 - [Paper Readings](https://docs.google.com/document/d/13lWP7D-J-v3HgdYzgC6muQlbEM8qEqdO5mBLml37n2o/edit?usp=drivesdk) — existing background-reading and exploratory item-development document.
 
-The resource links were verified during preparation. Their existing sharing is unchanged. There is no configured Teleology OSF project, preregistration, dataset, analysis, experiment link or Study Console resource. Dashboard membership does not grant Study Console access; verified CITI and a separate explicit Admin grant are required before any future student access.
+Dashboard membership does not grant Study Console access; verified CITI and a separate explicit Admin grant are required before any future student access.
 
 ## Repository organization and reproducibility status
 
@@ -56,19 +52,18 @@ The resource links were verified during preparation. Their existing sharing is u
 README.md              Durable scientific orientation and reproducibility status
 PROJECT_STATUS.md      Current operational state, ownership and handoff
 code/
-  R/                   R analyses and figure code, when they exist
-  experiments/         Experiment implementations/materials, when they exist
-data/                  Appropriately de-identified analysis data, when they exist
+  R/                   R analysis and figure code
+  experiments/         Experiment implementations and materials
+data/                  Local analysis inputs excluded from Git
 docs/                  Browser-renderable experiments or generated web output
-figures/               Plots, diagrams, screenshots and paper figures
+figures/               Plots and paper figures
+pre-registrations/     Study preregistration documents
 ```
-
-The repository currently contains these orientation files and directory guidance only. There are no experiment implementations, run commands, participant datasets, analyses, results or reproducible pipelines to execute. The prior exploratory material remains in the linked background document. Add actual inputs, dependencies, verified commands and expected outputs when implementation exists; keep current, superseded and planned work distinguishable.
 
 `docs/` is not a general literature/meeting-notes directory. Add a different directory deliberately if the work later needs one, rather than forcing scientific prose into a generated-output folder.
 
 ## Data, access and privacy
 
-This repository is private. Commit only appropriately de-identified analysis data when such data exist and are approved for this location. Never commit participant-identifiable data, identifiable raw CHS exports, login/session information, payment information, gift-card codes, credentials, API tokens, private keys or other restricted operational information. Keep restricted source data in approved systems outside GitHub. Review the actual staged files and history; `.gitignore` is not a privacy audit.
+This repository is public. Keep raw exports and Prolific IDs outside the checkout. The adult analysis reads local de-identified CSVs from `data/Norming`, which Git ignores. The repository contains the aggregate report and figure.
 
 Use focused branches, meaningful commits and review before merging. Keep operational ownership, blockers, next actions, version/checkpoint details and resume instructions in [PROJECT_STATUS.md](PROJECT_STATUS.md).

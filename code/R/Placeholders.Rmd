@@ -1,0 +1,242 @@
+---
+title: "Placeholders"
+author: "David Rose, Kate Shon, Ethan Fisher-Dayn & Shaun Nichols"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  bookdown::html_document2:
+    toc: true
+    toc_depth: 4
+    toc_float: true
+    theme: cosmo
+    highlight: tango
+params:
+  responses_file: "../../data/Norming/responses.csv"
+  demographics_file: "../../data/Norming/demographics.csv"
+  study_key: "TELEOLOGY-ADULT-NORMING-STUD-JLXK"
+  experiment_version: "adult-norming-40-v1"
+  expected_n: 100
+  figure_dir: "../../figures/Norming"
+---
+
+# Load packages
+
+```{r, message=FALSE}
+library("knitr")
+library("tidyverse")
+```
+
+# Global options
+
+```{r}
+theme_set(theme_classic())
+
+opts_chunk$set(comment = "#>",
+               fig.show = "hold")
+
+options(dplyr.summarise.inform = FALSE)
+```
+
+# EXPERIMENT 1 (Adult Norming)
+
+## Read in the data
+
+```{r}
+# Use the local de-identified CSVs for the main study.
+if (!file.exists(params$responses_file)) {
+  stop("Save the main study's de-identified responses.csv at data/Norming/responses.csv, then knit again.",
+       call. = FALSE)
+}
+if (!file.exists(params$demographics_file)) {
+  stop("Save the main study's de-identified demographics.csv at data/Norming/demographics.csv, then knit again.",
+       call. = FALSE)
+}
+
+df.exp1.data = read_csv(params$responses_file,
+                       col_types = cols(.default = col_character()),
+                       col_select = c(participant_id, study_key,
+                                      experiment_version, mode, trial_role,
+                                      item_id, property_text, selected_label))
+
+df.exp1.demographics = read_csv(params$demographics_file,
+                               col_types = cols(.default = col_character()),
+                               col_select = c(participant_id, study_key, experiment_version, mode,
+                                              age, gender, race, ethnicity))
+```
+
+## Wrangle
+
+```{r}
+categories = c("Behavioral", "Self-benefiting", "Ecological", "Human-benefiting")
+
+# Use the categorization trials from the preregistered main study.
+df.exp1.long = df.exp1.data %>%
+  filter(study_key == params$study_key,
+         experiment_version == params$experiment_version,
+         mode == "production",
+         trial_role == "response") %>%
+  transmute(participant = participant_id,
+            item_id,
+            item = property_text,
+            response = factor(selected_label, levels = categories))
+
+n.participants = n_distinct(df.exp1.long$participant)
+if (n.participants != params$expected_n) {
+  stop(sprintf("Found %d main-study participants. Expected %d before making the figure.",
+               n.participants, params$expected_n), call. = FALSE)
+}
+
+# Each participant should have exactly one judgment on every item.
+items = df.exp1.long %>% distinct(item_id, item)
+participant.items = df.exp1.long %>% count(participant, item_id)
+participant.trials = df.exp1.long %>% count(participant)
+stopifnot(!anyNA(df.exp1.long),
+          all(str_detect(df.exp1.long$participant, "^P[0-9]{3,}$")),
+          nrow(items) == 40L,
+          n_distinct(items$item_id) == 40L,
+          n_distinct(items$item) == 40L,
+          all(participant.items$n == 1L),
+          all(participant.trials$n == 40L))
+```
+
+## Demographics
+
+```{r exp1-demographics}
+df.exp1.demographics = df.exp1.demographics %>%
+  filter(study_key == params$study_key,
+         experiment_version == params$experiment_version,
+         mode == "production") %>%
+  select(participant_id, age, gender, race, ethnicity)
+
+# Match the demographics rows to the same participants included in the analysis.
+stopifnot(!anyDuplicated(df.exp1.demographics$participant_id),
+          setequal(df.exp1.demographics$participant_id, participant.trials$participant))
+
+age.reported = df.exp1.demographics %>%
+  pull(age) %>%
+  na.omit() %>%
+  as.numeric()
+
+stopifnot(all(is.finite(age.reported)), all(between(age.reported, 18, 120)))
+
+age.summary = tibble(
+  Measure = "Age",
+  Response = if (length(age.reported) > 1L) {
+    sprintf("%.1f (SD %.1f), range %d–%d",
+            mean(age.reported), sd(age.reported), min(age.reported), max(age.reported))
+  } else if (length(age.reported) == 1L) {
+    as.character(age.reported)
+  } else {
+    "No reported ages"
+  },
+  n = length(age.reported)
+)
+
+if (length(age.reported) < n.participants) {
+  age.summary = bind_rows(age.summary,
+                          tibble(Measure = "Age", Response = "Missing",
+                                 n = n.participants - length(age.reported)))
+}
+
+category.summary = df.exp1.demographics %>%
+  select(gender, race, ethnicity) %>%
+  pivot_longer(everything(), names_to = "Measure", values_to = "Response") %>%
+  mutate(Measure = str_to_title(Measure),
+         Response = replace_na(na_if(str_squish(Response), ""), "Missing")) %>%
+  count(Measure, Response) %>%
+  arrange(match(Measure, c("Gender", "Race", "Ethnicity")), desc(n), Response)
+
+bind_rows(age.summary, category.summary) %>%
+  mutate(Percent = scales::percent(n / n.participants, accuracy = 1),
+         Measure = if_else(duplicated(Measure), "", Measure)) %>%
+  kable(col.names = c("Measure", "Summary or response", "n", "% of sample"),
+        caption = sprintf("Participant demographics (N = %d)", n.participants),
+        table.attr = 'class="table table-striped table-condensed"')
+```
+
+## Plots
+
+### Plot of the top five properties for each category
+
+```{r fig.height=6, fig.width=10, message=FALSE}
+# As in Teleology and Generics, rank phrases by how often each category was
+# selected. Rank all 40 phrases for each response, with alphabetical ties.
+df.exp1.counts = df.exp1.long %>%
+  count(item, response) %>%
+  complete(item, response, fill = list(n = 0L))
+
+df.exp1.ranked_items = df.exp1.counts %>%
+  arrange(response, desc(n), item, .locale = "en") %>%
+  group_by(response) %>%
+  mutate(rank = row_number()) %>%
+  ungroup()
+
+df.exp1.top_items = df.exp1.ranked_items %>% filter(rank <= 5L)
+
+# Keep the full distribution of responses for each selected phrase.
+df.plot = df.exp1.counts %>%
+  inner_join(df.exp1.top_items %>%
+               rename(type = response) %>%
+               select(-n),
+             by = "item", relationship = "many-to-many") %>%
+  mutate(type = factor(type, levels = categories),
+         item.plot = paste(type, item, sep = "\n")) %>%
+  filter(n > 0)
+
+plot.exp1.top = ggplot(data = df.plot,
+                      mapping = aes(x = reorder(item.plot, -rank),
+                                    y = n,
+                                    fill = response)) +
+  geom_col(width = 0.75,
+           color = "black",
+           position = position_fill(reverse = TRUE)) +
+  scale_x_discrete(labels = function(x) sub("^[^\n]+\n", "", x),
+                   expand = expansion(add = 0.55)) +
+  scale_y_continuous(breaks = seq(0, 1, 0.25),
+                     labels = scales::label_percent(accuracy = 1)) +
+  coord_flip(expand = FALSE) +
+  facet_wrap(~type, ncol = 2, scales = "free") +
+  labs(title = "Top five phrases for each category",
+       x = NULL, y = NULL) +
+  scale_fill_brewer(palette = "Set1", drop = FALSE) +
+  theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+        text = element_text(size = 12),
+        strip.text = element_text(size = 13, margin = margin(b = 8)),
+        strip.background = element_blank(),
+        panel.spacing = grid::unit(1.2, "lines"),
+        plot.margin = margin(t = 12, r = 25, b = 12, l = 15),
+        legend.position = "bottom",
+        legend.title = element_blank())
+
+plot.exp1.top
+
+dir.create(params$figure_dir, recursive = TRUE, showWarnings = FALSE)
+ggsave(filename = file.path(params$figure_dir, "exp1_top_stacked.pdf"),
+       plot = plot.exp1.top,
+       height = 6,
+       width = 10,
+       device = cairo_pdf)
+```
+
+### Item selection
+
+```{r exp1-top-five}
+# Flag any item outside the top five that received as many votes as rank 5.
+df.exp1.cutoff_ties = df.exp1.ranked_items %>%
+  group_by(response) %>%
+  filter(n == n[5L], any(rank > 5L & n == n[5L])) %>%
+  ungroup()
+
+df.exp1.top_items %>%
+  transmute(Category = response, Rank = rank, Phrase = item, Votes = n,
+            Percent = scales::percent(n / n.participants, accuracy = 1)) %>%
+  kable(caption = "Top five phrases by number of votes for each category",
+        table.attr = 'class="table table-striped table-condensed"')
+
+if (nrow(df.exp1.cutoff_ties) > 0L) {
+  df.exp1.cutoff_ties %>%
+    transmute(Category = response, Rank = rank, Phrase = item, Votes = n,
+              Plotted = if_else(rank <= 5L, "Yes", "No")) %>%
+    kable(caption = "Ties at the fifth-place cutoff (alphabetical order)",
+          table.attr = 'class="table table-condensed"')
+}
+```
