@@ -1,41 +1,6 @@
-// Kids Teleology Study (jsPsych v8)
-// URL options
-//     ?pid = 7         participant number.
-// Narration is disabled in this draft; screens advance with their buttons.
-//
-// Structure: welcome -> how to answer yes/no -> practice -. thank you + fireworks -.
-//            for each animal (random order):
-//               introduction (picture + all 4 properties on one screen)
-//               "what is the animal for" transition -> 4 questions, one per screen
-//               neutral thank you before the next animal
-// Animal order and property introduction order are random per child.
-// Questions follow that animal's property introduction order.
-// Every child answers 20 questions, one per property
-
-
-const params = new URLSearchParams(window.location.search);
+// Teleology Experiment 1 uses the Animal Game for this adult pilot.
+const EXPERIMENT_VERSION = "teleology-exp1-adult-pilot-v1";
 const AUDIO = false;
-
-function getParticipantNumber(){
-    const fromUR1 = parseInt(params.get("pid"), 10);
-    if (!isNaN(fromUR1)) return fromUR1;
-    try{
-        const n = parseInt(localStorage.getItem("teleology_kids_counter") || "0", 10);
-        localStorage.setItem("teleology_kids_counter", String(n+1));
-        return n;
-    } catch (e){
-        return Math.floor(Math.random()*1000);
-    }
-}
-
-const PID = getParticipantNumber();
-const SESSION_ID = "k" + PID + "_" + Date.now();
-
-const jsPsych = initJsPsych({
-    on_finish: () => {
-        jsPsych.data.get().filter({phase: "test"}).localSave("csv", "teleology_kids_" + SESSION_ID + ".csv");
-    }
-})
 
 // helper functions
 
@@ -68,11 +33,11 @@ function narrate(text, onDone, onFail){
 
 const stage = (html, cls) => `<div class="stage ${cls || ""}">${html}</div>`;
 
-// an info screen with one button. opts.auto will advance automatically when narration ends (for audio mode only)
-// opts.spoken menas text to read if it should differ from the on-scrreen HHTML
+// Information screens have one button. Audio mode can advance after narration.
+// Use opts.spoken when the narration differs from the on-screen HTML.
 function screen(html, label, extraData, opts){
     opts = opts || {};
-    const auto = AUDIO && opts.auto;
+    const auto = AUDIO && opts.onNarrationEnd;
     let ended = false;
     return{
         type: jsPsychHtmlButtonResponse,
@@ -84,7 +49,7 @@ function screen(html, label, extraData, opts){
             ended = false;
             const btn = document.querySelector(".btn-next");
             narrate(opts.spoken || html,
-                auto ? () => {if (!ended) jsPsych.finishTrial(); } : null,
+                auto ? () => {if (!ended) opts.onNarrationEnd(); } : null,
                 auto ?() => btn.classList.remove("hidden") : null);
             if (opts.on_load) opts.on_load();
         },
@@ -123,7 +88,7 @@ function practiceBlock(image, question, correctIdx, label){
         timeline: [yesNoTrial(
             () => `<img class="practice-img" src="${image}" alt=""><p class="big">${retry()}${question}</p>`,
             () => retry() + question,
-            {phase: "practice", practice_item: label},
+            {phase: "practice", task: "practice", trial_role: "practice", practice_item: label},
             (d) => { d.correct = d.response === correctIdx;}
         )],
         loop_function: (data) => {
@@ -169,115 +134,114 @@ function startFireworks(){
 }
 
 
-// timeline
-const animalOrder = jsPsych.randomization.shuffle(ANIMALS.map((a, i) => i));
-const timeline = [];
+function buildExperiment1Timeline(jsPsych) {
+    const animalOrder = jsPsych.randomization.shuffle(ANIMALS.map((a, i) => i));
+    const timeline = [];
 
-// 1. Welcome screen
-timeline.push(screen(
-    `<p class="big title">Welcome to the Animal Game!</p>
-    <div class="parade">${ANIMALS.map((a, i) => `<img class="parade-animal" style ="animation-delay:${(i*0.18).toFixed(2)}s" src="${a.image}" alt="">`).join("")}</div>
-    <p class="mid">Today you are going to meet some animals and answer some questions about them. </p>`,
-    "Let's start!", {screen: "welcome"},
-    {auto: true,
-        spoken: "Welcome to the Animal Game! Today you are going to meet some animals and answer some questions about them."}
-));
-
-// 2. How to answer
-timeline.push(screen(
-    `<p class="big">In our game, we will ask you a question, and you can answer yes or no.</p>
-    <span class="jspsych-btn btn-answer btn-yes demo">${ICON_YES}<span>Yes</span></span>
-    <span class="jspsych-btn btn-answer btn-no demo">${ICON_NO}<span>No</span></span>
-    <p class="mid">Let's practice!</p>`,
-    "Next", {screen: "yes_no_instructions"},
-    {spoken: "In our game, we will ask you questions, and you can answer yes or no. Let's practice!"}
-));
-
-// 3. practice
-timeline.push(practiceBlock("assets/animals/bird.svg", "Is this a bird?", 0, "bird_yes"));
-timeline.push(practiceBlock("assets/animals/giraffe.svg", "Is this a cat?", 1, "giraffe_no"));
-
-// 4. thank you with fireworks
-timeline.push(screen(
-    `<canvas id="fireworks"></canvas>
-    <p class="big title">Thank you!</p>
-    <p class="big"> Now you are going to meet some animals.</p>`,
-    "Next", {screen: "practice_thanks"},
-    {stageClass: "fireworks-stage", spoken: "Thank you! Now you are going to meet some animals.",
-        on_load: startFireworks, on_finish: () => {if (stopFireworks) stopFireworks();}}
-));
-
-// 5. Animals
-animalOrder.forEach((animalIdx, pos) =>{
-    const animal = ANIMALS[animalIdx];
-    const pluralName = animal.name === "Dax" ? "Daxes" : `${animal.name}s`;
-    const baseData = {animal: animal.name, animal_id: animal.id, animal_position: pos + 1};
-
-    // intro
-    const introProps = jsPsych.randomization.shuffle(animal.properties);
-    const chips = introProps.map((p, i) =>
-    `<span class="prop">${p.introText}</span>${i < 2 ? "," : i ===2 ? ", and" : "."}`).join(" ");
-    const spokenIntro = `This is a ${animal.name}. ${pluralName} ` +
-    introProps.map((p, i) => (i === 3 ? "and " : "") + p.introText).join(", ")+".";
+    // 1. Welcome screen
     timeline.push(screen(
-        `<p class="big">This is a <span class="animal-name">${animal.name}</span>.</p>
-        <div class="intro-row">
-        <img class="animal-img" src="${animal.image}" alt="A ${animal.name}">
-        <p class="mid intro-text">${pluralName} ${chips}</p>
-        </div>`,
-        "Next", Object.assign({screen: "animal_intro", intro_order: introProps.map(p =>p.id).join("|")}, baseData),
-        {spoken: spokenIntro}
+        `<p class="big title">Welcome to the Animal Game!</p>
+        <div class="parade">${ANIMALS.map((a, i) => `<img class="parade-animal" style ="animation-delay:${(i*0.18).toFixed(2)}s" src="${a.image}" alt="">`).join("")}</div>
+        <p class="mid">Today you are going to meet some animals and answer some questions about them. </p>`,
+        "Let's start!", {screen: "welcome"},
+        {onNarrationEnd: () => jsPsych.finishTrial(),
+            spoken: "Welcome to the Animal Game! Today you are going to meet some animals and answer some questions about them."}
     ));
 
-    // transition
+    // 2. How to answer
     timeline.push(screen(
-        `<img class="mini-animal" src="${animal.image}" alt="">
-        <p class="big">Now that you have learned about ${pluralName}, we want to ask you about what ${pluralName} are for.</p>`,
-        "Next", Object.assign({screen: "questions_intro"}, baseData)
+        `<p class="big">In our game, we will ask you a question, and you can answer yes or no.</p>
+        <span class="jspsych-btn btn-answer btn-yes demo">${ICON_YES}<span>Yes</span></span>
+        <span class="jspsych-btn btn-answer btn-no demo">${ICON_NO}<span>No</span></span>
+        <p class="mid">Let's practice!</p>`,
+        "Next", {screen: "yes_no_instructions"},
+        {spoken: "In our game, we will ask you questions, and you can answer yes or no. Let's practice!"}
     ));
 
-    // One question per screen, in the same order as this animal's introduction.
-    introProps.forEach((p,k)=> {
-        const spoken = `Is a ${animal.name} for ${p.text}?`;
-        timeline.push(yesNoTrial(
-            `<img class="mini-animal" src="${animal.image}" alt="">
-            <p class ="big">Is a ${animal.name} for <span class="prop">${p.text}</span>?</p>`,
-            spoken,
-            {
-                phase: "test",
-                participant_id: PID,
-                session_id: SESSION_ID,
-                animal: animal.name,
-                animal_position: pos + 1,
-                intro_order: introProps.map(item => item.id).join("|"),
-                test_position_within_animal: k + 1,
-                property_id: p.id,
-                norming_item_id: p.normingItemId,
-                property_text: p.text,
-                property_category: p.category
-            },
-            (d) => {
-                d.response_label = d.response === 0 ? "yes" : "no";
-                d.rt_ms=Math.round(d.rt);
-            }
+    // 3. practice
+    timeline.push(practiceBlock("assets/animals/bird.svg", "Is this a bird?", 0, "bird_yes"));
+    timeline.push(practiceBlock("assets/animals/giraffe.svg", "Is this a cat?", 1, "giraffe_no"));
+
+    // 4. thank you with fireworks
+    timeline.push(screen(
+        `<canvas id="fireworks"></canvas>
+        <p class="big title">Thank you!</p>
+        <p class="big"> Now you are going to meet some animals.</p>`,
+        "Next", {screen: "practice_thanks"},
+        {stageClass: "fireworks-stage", spoken: "Thank you! Now you are going to meet some animals.",
+            on_load: startFireworks, on_finish: () => {if (stopFireworks) stopFireworks();}}
+    ));
+
+    // 5. Animals
+    animalOrder.forEach((animalIdx, pos) =>{
+        const animal = ANIMALS[animalIdx];
+        const pluralName = animal.name === "Dax" ? "Daxes" : `${animal.name}s`;
+        const baseData = {animal: animal.name, animal_id: animal.id, animal_position: pos + 1};
+
+        // intro
+        const introProps = jsPsych.randomization.shuffle(animal.properties);
+        const chips = introProps.map((p, i) =>
+        `<span class="prop">${p.introText}</span>${i < 2 ? "," : i ===2 ? ", and" : "."}`).join(" ");
+        const spokenIntro = `This is a ${animal.name}. ${pluralName} ` +
+        introProps.map((p, i) => (i === 3 ? "and " : "") + p.introText).join(", ")+".";
+        timeline.push(screen(
+            `<p class="big">This is a <span class="animal-name">${animal.name}</span>.</p>
+            <div class="intro-row">
+            <img class="animal-img" src="${animal.image}" alt="A ${animal.name}">
+            <p class="mid intro-text">${pluralName} ${chips}</p>
+            </div>`,
+            "Next", Object.assign({screen: "animal_intro", intro_order: introProps.map(p =>p.id).join("|")}, baseData),
+            {spoken: spokenIntro}
         ));
+
+        // transition
+        timeline.push(screen(
+            `<img class="mini-animal" src="${animal.image}" alt="">
+            <p class="big">Now that you have learned about ${pluralName}, we want to ask you about what ${pluralName} are for.</p>`,
+            "Next", Object.assign({screen: "questions_intro"}, baseData)
+        ));
+
+        // One question per screen, in the same order as this animal's introduction.
+        introProps.forEach((p,k)=> {
+            const spoken = `Is a ${animal.name} for ${p.text}?`;
+            timeline.push(yesNoTrial(
+                `<img class="mini-animal" src="${animal.image}" alt="">
+                <p class ="big">Is a ${animal.name} for <span class="prop">${p.text}</span>?</p>`,
+                spoken,
+                {
+                    phase: "test",
+                    task: "trial",
+                    trial_role: "response",
+                    measure: "purpose_judgment",
+                    trial_number: pos * animal.properties.length + k + 1,
+                    item_id: p.id,
+                    stimulus_id: p.id,
+                    animal_id: animal.id,
+                    animal: animal.name,
+                    animal_position: pos + 1,
+                    intro_order: introProps.map(item => item.id).join("|"),
+                    test_position_within_animal: k + 1,
+                    property_id: p.id,
+                    norming_item_id: p.normingItemId,
+                    property_text: p.text,
+                    property_category: p.category
+                },
+                (d) => {
+                    d.response_label = d.response === 0 ? "yes" : "no";
+                    d.rt_ms=Math.round(d.rt);
+                }
+            ));
+        });
+
+        // neutral transition
+        if (pos <animalOrder.length -1){
+            timeline.push(screen(
+                `<p class="big">Thank you!</p>
+                <p class="mid">Let's meet a new animal.</p>`,
+                "Next", {screen: "between_animals", break_after: pos + 1}
+            ));
+        }
     });
 
-    // neutral transition
-    if (pos <animalOrder.length -1){
-        timeline.push(screen(
-            `<p class="big">Thank you!</p>
-            <p class="mid">Let's meet a new animal.</p>`,
-            "Next", {screen: "between_animals", break_after: pos + 1}
-        ));
-    }
-});
-
-// 6. end
-timeline.push(screen(
-    `<p class="big">All done! Thank you for playing!</p>
-    <p class="mid">Press the button to finish.</p>`,
-    "Finish", {screen: "end"}
-));
-
-jsPsych.run(timeline);
+    return timeline;
+}

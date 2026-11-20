@@ -57,3 +57,46 @@ html, body { background: var(--sky); color: var(--ink); font-family: "Fredoka", 
     .parade-animal { width: 90px; }
 }
 @media (prefers-reduced-motion: reduce) { .parade-animal { animation: none; } }
+
+.consent-screen .jspsych-btn-group-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 560px;
+    margin: 24px auto 0;
+}
+.consent-screen .jspsych-btn,
+.demographics-screen .jspsych-btn,
+.pilot-status .jspsych-btn {
+    margin: 8px 0;
+    min-width: 0;
+    padding: 12px 20px;
+    background: #245b94;
+    font-size: 18px;
+}
+.consent-screen .jspsych-btn:hover,
+.demographics-screen .jspsych-btn:hover,
+.pilot-status .jspsych-btn:hover { background: #17456f; }
+.demographics-screen, .pilot-status {
+    box-sizing: border-box;
+    padding: 24px 16px;
+}
+.pilot-status {
+    margin: 8vh auto 0;
+    max-width: 700px;
+    text-align: center;
+}
+.demographics { margin:0 auto; max-width:700px; text-align:left; }
+.demographics h1 { margin:0 0 10px; font-size:clamp(26px,5vw,34px); line-height:1.2; }
+.demographics p { margin:0 0 24px; color:#454b54; }
+.demographics-fields { display:grid; gap:20px; padding:18px 20px; border:1px solid #dfe2e7; border-radius:14px; }
+.demographics-age { display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px; }
+.demographics-age label,.demographics legend { font-weight:650; }
+.demographics-age input { box-sizing:border-box; width:90px; padding:7px 10px; font:inherit; border:1px solid #888; border-radius:6px; }
+.demographics fieldset { min-width:0; margin:0; padding:8px 0 0; border:0; }
+.demographics legend { padding:0; }
+.demographic-options { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:5px 18px; }
+.demographic-options label { display:flex; align-items:flex-start; gap:7px; min-height:30px; cursor:pointer; }
+.demographic-options input { flex:none; margin:5px 0 0; accent-color:#38383e; }
+.demographics-screen #jspsych-survey-html-form-next { margin:22px auto 0; width:min(100%,260px); }
+@media (max-width: 520px) {
+    .consent-screen .jspsych-btn-group-grid, .demographic-options { grid-template-columns: 1fr; }
+}
