@@ -20,7 +20,9 @@ human-benefiting based on the adult responses. The CSV includes
 The 30-person adult pilot uses the norming study’s consent template and optional
 age, gender, race, and ethnicity questions. Study Console launches use one
 all-items group. The Console saves the consent, practice, 20 test responses,
-and demographics with the participant’s launch information.
+and demographics with the participant’s launch information. The
+`test_trial_number` column counts the 20 test questions independently of the
+Console’s row numbering.
 
 To run the study locally, start `python3 -m http.server 8000 --bind 127.0.0.1`
 from this folder and open `http://127.0.0.1:8000/` in a browser. Add

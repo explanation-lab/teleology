@@ -213,7 +213,7 @@ function buildExperiment1Timeline(jsPsych) {
                     task: "trial",
                     trial_role: "response",
                     measure: "purpose_judgment",
-                    trial_number: pos * animal.properties.length + k + 1,
+                    test_trial_number: pos * animal.properties.length + k + 1,
                     item_id: p.id,
                     stimulus_id: p.id,
                     animal_id: animal.id,
